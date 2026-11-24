@@ -5,6 +5,7 @@
   --color-muted: #5f6b7a;
   --color-border: #dfe3ea;
   --color-accent: #2f6fed;
+  --color-brand: #e5121b;
   --color-danger: #c8322b;
   --color-on-accent: #ffffff;
 
@@ -46,9 +47,20 @@ a {
 }
 
 .layout__brand {
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.01em;
   color: var(--color-text);
   text-decoration: none;
+}
+
+.layout__brand-mark {
+  height: 22px;
+  width: auto;
+  color: var(--color-brand);
 }
 
 .layout__main {
