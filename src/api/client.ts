@@ -32,9 +32,48 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: Json | FormData
 }
 
+/** 쓰기 요청에는 CSRF 토큰을 붙인다 (서버가 XSRF-TOKEN 쿠키로 내려준 값을 X-XSRF-TOKEN 헤더로). */
+const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE'])
+export const CSRF_COOKIE = 'XSRF-TOKEN'
+export const CSRF_HEADER = 'X-XSRF-TOKEN'
+
+export function readCookie(name: string): string | null {
+  const prefix = `${name}=`
+  const found = document.cookie.split('; ').find((part) => part.startsWith(prefix))
+  return found ? decodeURIComponent(found.slice(prefix.length)) : null
+}
+
+/**
+ * API를 호출한다. 쓰기 요청이 CSRF 토큰 문제(403 CSRF_TOKEN_INVALID)로 거절되면
+ * 토큰 쿠키를 다시 받아 한 번만 재시도한다 (로그아웃 직후처럼 쿠키가 지워진 경우).
+ */
 export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  try {
+    return await request<T>(path, options)
+  } catch (error) {
+    const method = (options.method ?? 'GET').toUpperCase()
+    if (error instanceof ApiError && error.code === 'CSRF_TOKEN_INVALID' && UNSAFE_METHODS.has(method)) {
+      await refreshCsrfToken()
+      return request<T>(path, options)
+    }
+    throw error
+  }
+}
+
+/** 로그인 여부와 상관없이 응답에 XSRF-TOKEN 쿠키가 실리는 API를 불러 토큰을 새로 받는다. */
+async function refreshCsrfToken(): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/auth/me`, { headers: { Accept: 'application/json' } })
+  } catch {
+    // 네트워크 오류면 재시도 요청에서 같은 오류가 다시 난다
+  }
+}
+
+async function request<T>(path: string, options: RequestOptions): Promise<T> {
   const { body, headers, ...rest } = options
   const isForm = body instanceof FormData
+  const method = (rest.method ?? 'GET').toUpperCase()
+  const csrfToken = UNSAFE_METHODS.has(method) ? readCookie(CSRF_COOKIE) : null
 
   let response: Response
   try {
@@ -43,6 +82,7 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
       headers: {
         Accept: 'application/json',
         ...(body !== undefined && !isForm ? { 'Content-Type': 'application/json' } : {}),
+        ...(csrfToken ? { [CSRF_HEADER]: csrfToken } : {}),
         ...headers,
       },
       body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),

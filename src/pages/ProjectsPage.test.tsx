@@ -29,7 +29,8 @@ describe('프로젝트 목록 화면', () => {
 
     renderRoute('/projects')
 
-    expect(screen.getByRole('status')).toHaveTextContent('불러오는 중')
+    // 로그인 확인이 끝난 뒤 목록을 불러오는 동안의 표시
+    expect(await screen.findByText('프로젝트를 불러오는 중…')).toHaveAttribute('role', 'status')
     const list = await screen.findByRole('list', { name: '프로젝트 목록' })
     const items = within(list).getAllByRole('listitem')
     expect(items).toHaveLength(2)
@@ -80,7 +81,7 @@ describe('프로젝트 생성', () => {
     )
 
     const { router } = renderRoute('/projects')
-    await userEvent.type(screen.getByLabelText('새 프로젝트'), '  결제 API  ')
+    await userEvent.type(await screen.findByLabelText('새 프로젝트'), '  결제 API  ')
     await userEvent.click(screen.getByRole('button', { name: '만들기' }))
 
     expect(await screen.findByRole('heading', { name: '결제 API' })).toBeInTheDocument()
@@ -99,7 +100,7 @@ describe('프로젝트 생성', () => {
     )
 
     renderRoute('/projects')
-    await userEvent.type(screen.getByLabelText('새 프로젝트'), '   ')
+    await userEvent.type(await screen.findByLabelText('새 프로젝트'), '   ')
     await userEvent.click(screen.getByRole('button', { name: '만들기' }))
 
     expect(screen.getByText('이름을 입력해 주세요.')).toBeInTheDocument()
@@ -111,7 +112,7 @@ describe('프로젝트 생성', () => {
     server.use(http.get('/api/projects', () => HttpResponse.json([])))
 
     renderRoute('/projects')
-    const input = screen.getByLabelText('새 프로젝트')
+    const input = await screen.findByLabelText('새 프로젝트')
     expect(input).toHaveAccessibleDescription(/서비스\(서버\) 하나당 프로젝트 하나예요/)
 
     await userEvent.click(screen.getByRole('button', { name: '만들기' }))
@@ -131,7 +132,7 @@ describe('프로젝트 생성', () => {
     )
 
     renderRoute('/projects')
-    await userEvent.type(screen.getByLabelText('새 프로젝트'), '상품 API')
+    await userEvent.type(await screen.findByLabelText('새 프로젝트'), '상품 API')
     await userEvent.click(screen.getByRole('button', { name: '만들기' }))
 
     expect(await screen.findByText('이미 쓰는 이름입니다.')).toBeInTheDocument()
@@ -150,7 +151,7 @@ describe('프로젝트 생성', () => {
     )
 
     renderRoute('/projects')
-    await userEvent.type(screen.getByLabelText('새 프로젝트'), 'a')
+    await userEvent.type(await screen.findByLabelText('새 프로젝트'), 'a')
     await userEvent.click(screen.getByRole('button', { name: '만들기' }))
 
     const pending = screen.getByRole('button', { name: '만드는 중…' })

@@ -1,5 +1,7 @@
-import { QueryClient } from '@tanstack/react-query'
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
+import { isSessionExpired } from '../api/auth'
 import { ApiError } from '../api/client'
+import { authKeys } from '../features/auth/queries'
 
 const MAX_RETRIES = 2
 
@@ -10,7 +12,13 @@ export function shouldRetry(failureCount: number, error: unknown): boolean {
 }
 
 export function createQueryClient(): QueryClient {
-  return new QueryClient({
+  // 어느 API에서든 세션 만료가 오면 로그인 상태를 비운다 → RequireAuth가 로그인 화면으로 보낸다
+  const onError = (error: unknown) => {
+    if (isSessionExpired(error)) queryClient.setQueryData(authKeys.me, null)
+  }
+  const queryClient: QueryClient = new QueryClient({
+    queryCache: new QueryCache({ onError }),
+    mutationCache: new MutationCache({ onError }),
     defaultOptions: {
       queries: {
         retry: shouldRetry,
@@ -22,4 +30,5 @@ export function createQueryClient(): QueryClient {
       },
     },
   })
+  return queryClient
 }

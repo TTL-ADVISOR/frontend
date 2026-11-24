@@ -35,6 +35,10 @@ a {
 }
 
 .layout__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   padding: 12px 24px;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
@@ -292,5 +296,100 @@ h1 {
 }
 
 .project-item__meta dd {
+  margin: 0;
+}
+
+/* ---- 계정 (헤더) ---- */
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.account__name {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account__error {
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+}
+
+.account__logout {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+}
+
+.account__logout:hover:not(:disabled) {
+  border-color: #c4c8cf;
+  background: #f4f4f5;
+}
+
+/* ---- 로그인·회원가입 ---- */
+
+.auth {
+  max-width: 400px;
+  margin: 32px auto 0;
+}
+
+.auth__title {
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.auth__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.auth__notice {
+  margin: 0;
+}
+
+.auth__submit {
+  width: 100%;
+  padding: 10px 16px;
+}
+
+.auth__switch {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.auth__switch a {
+  color: var(--color-text);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field__label {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.field .input {
+  width: 100%;
+}
+
+.field__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.field .field-error {
   margin: 0;
 }
