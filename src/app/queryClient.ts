@@ -1,5 +1,6 @@
-import { QueryClient } from '@tanstack/react-query'
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
 import { ApiError } from '../api/client'
+import { authKeys } from '../features/auth/queries'
 
 const MAX_RETRIES = 2
 
@@ -9,8 +10,19 @@ export function shouldRetry(failureCount: number, error: unknown): boolean {
   return failureCount < MAX_RETRIES
 }
 
+/** 세션이 만료됐거나 로그아웃된 상태로 API를 부른 경우. 로그인 실패(INVALID_CREDENTIALS)와는 구분한다. */
+export function isSessionExpired(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 401 && error.code === 'UNAUTHORIZED'
+}
+
 export function createQueryClient(): QueryClient {
-  return new QueryClient({
+  // 어느 API에서든 세션 만료가 오면 로그인 상태를 비운다 → RequireAuth가 로그인 화면으로 보낸다
+  const onError = (error: unknown) => {
+    if (isSessionExpired(error)) queryClient.setQueryData(authKeys.me, null)
+  }
+  const queryClient: QueryClient = new QueryClient({
+    queryCache: new QueryCache({ onError }),
+    mutationCache: new MutationCache({ onError }),
     defaultOptions: {
       queries: {
         retry: shouldRetry,
@@ -22,4 +34,5 @@ export function createQueryClient(): QueryClient {
       },
     },
   })
+  return queryClient
 }
