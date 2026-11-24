@@ -1,8 +1,14 @@
 import { screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { http, HttpResponse } from 'msw'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { server } from '../test/server'
 import { renderRoute } from '../test/render'
 
 describe('routes', () => {
+  beforeEach(() => {
+    server.use(http.get('/api/projects', () => HttpResponse.json([])))
+  })
+
   it('루트는 프로젝트 목록으로 이동한다', async () => {
     const { router } = renderRoute('/')
 
