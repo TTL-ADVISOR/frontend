@@ -107,6 +107,18 @@ describe('프로젝트 생성', () => {
     expect(posted).toBe(false)
   })
 
+  it('입력창 설명으로 프로젝트가 서비스 단위임을 알려 주고, 오류가 나면 오류도 함께 연결한다', async () => {
+    server.use(http.get('/api/projects', () => HttpResponse.json([])))
+
+    renderRoute('/projects')
+    const input = screen.getByLabelText('새 프로젝트')
+    expect(input).toHaveAccessibleDescription(/서비스\(서버\) 하나당 프로젝트 하나예요/)
+
+    await userEvent.click(screen.getByRole('button', { name: '만들기' }))
+    expect(input).toHaveAccessibleDescription(/프로젝트 하나예요.*\S/)
+    expect(input.getAttribute('aria-describedby')).toBe('project-name-hint project-name-error')
+  })
+
   it('서버 검증 오류는 필드 사유를 보여 준다', async () => {
     server.use(
       http.get('/api/projects', () => HttpResponse.json([])),

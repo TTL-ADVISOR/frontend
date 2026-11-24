@@ -39,10 +39,10 @@ export default function CreateProjectForm({ onCreated }: Props) {
           id="project-name"
           className="input"
           value={name}
-          placeholder="예: 상품 API"
+          placeholder="예: 쇼핑몰 백엔드"
           maxLength={PROJECT_NAME_MAX}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? 'project-name-error' : undefined}
+          aria-describedby={error ? 'project-name-hint project-name-error' : 'project-name-hint'}
           onChange={(e) => {
             setName(e.target.value)
             if (clientError) setClientError(null)
@@ -52,6 +52,9 @@ export default function CreateProjectForm({ onCreated }: Props) {
           {mutation.isPending ? '만드는 중…' : '만들기'}
         </button>
       </div>
+      <p id="project-name-hint" className="create-form__hint">
+        서비스(서버) 하나당 프로젝트 하나예요. 만든 뒤 그 서비스의 접근 로그를 올리면 API별로 TTL을 추천해 드려요.
+      </p>
       {error && (
         <p id="project-name-error" className="field-error">
           {error}
