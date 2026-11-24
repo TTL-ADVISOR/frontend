@@ -28,6 +28,11 @@ function AccountMenu() {
       <span className="account__name" title={me.data.email}>
         {me.data.name}
       </span>
+      {logout.isError && (
+        <span role="alert" className="account__error">
+          로그아웃하지 못했습니다. 다시 시도해 주세요.
+        </span>
+      )}
       <button type="button" className="button account__logout" onClick={() => logout.mutate()} disabled={logout.isPending}>
         {logout.isPending ? '로그아웃 중…' : '로그아웃'}
       </button>

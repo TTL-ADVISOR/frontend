@@ -315,6 +315,11 @@ h1 {
   white-space: nowrap;
 }
 
+.account__error {
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+}
+
 .account__logout {
   padding: 6px 12px;
   font-size: 0.875rem;

@@ -208,6 +208,51 @@ describe('로그아웃', () => {
   })
 })
 
+describe('로그아웃 실패와 CSRF', () => {
+  it('로그아웃 요청이 서버 오류로 실패하면 로그인 상태를 유지하고 실패를 알린다', async () => {
+    server.use(
+      http.post('/api/auth/logout', () =>
+        HttpResponse.json({ code: 'INTERNAL_ERROR', message: '서버 오류가 발생했습니다.', details: {} }, { status: 500 }),
+      ),
+      http.get('/api/projects', () => HttpResponse.json([])),
+    )
+    const { router } = renderRoute('/projects')
+
+    await userEvent.click(await screen.findByRole('button', { name: '로그아웃' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('로그아웃하지 못했습니다')
+    expect(router.state.location.pathname).toBe('/projects')
+    expect(screen.getByText('박개발')).toBeInTheDocument()
+  })
+
+  it('로그인 없이 쓰기 요청을 보내면 403(CSRF) → 토큰 재발급 → 401을 거쳐 로그인 화면으로 간다', async () => {
+    let meCalls = 0
+    server.use(
+      // 처음 로그인 확인은 로그인 상태(화면 진입용), 이후 토큰 재발급 요청은 세션이 끝난 상태
+      http.get('/api/auth/me', () => {
+        meCalls += 1
+        if (meCalls === 1) return HttpResponse.json(testUser)
+        document.cookie = 'XSRF-TOKEN=fresh; path=/'
+        return HttpResponse.json({ code: 'UNAUTHORIZED', message: '', details: {} }, { status: 401 })
+      }),
+      http.get('/api/projects', () => HttpResponse.json([])),
+      http.post('/api/projects', ({ request }) =>
+        request.headers.get('X-XSRF-TOKEN') === 'fresh'
+          ? HttpResponse.json({ code: 'UNAUTHORIZED', message: '로그인이 필요합니다.', details: {} }, { status: 401 })
+          : HttpResponse.json({ code: 'CSRF_TOKEN_INVALID', message: '', details: {} }, { status: 403 }),
+      ),
+    )
+    const { router } = renderRoute('/projects')
+
+    await userEvent.type(await screen.findByLabelText('새 프로젝트'), '쇼핑몰')
+    await userEvent.click(screen.getByRole('button', { name: '만들기' }))
+
+    expect(await screen.findByRole('heading', { name: '로그인' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/login')
+    document.cookie = 'XSRF-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
+  })
+})
+
 describe('safeNextPath', () => {
   it('같은 사이트 경로만 허용하고 나머지는 프로젝트 목록으로 바꾼다', () => {
     expect(safeNextPath('/projects/3?tab=a')).toBe('/projects/3?tab=a')

@@ -24,6 +24,11 @@ export const PASSWORD_MAX = 64
 export const PASSWORD_MAX_BYTES = 72
 export const COMPANY_MAX = 100
 
+/** 세션이 만료됐거나 로그아웃된 상태로 API를 부른 경우. 로그인 실패(INVALID_CREDENTIALS)와는 구분한다. */
+export function isSessionExpired(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 401 && error.code === 'UNAUTHORIZED'
+}
+
 /** 로그인 상태면 사용자, 아니면 null. 이 호출이 XSRF-TOKEN 쿠키도 받아 온다. */
 export async function fetchMe(): Promise<User | null> {
   try {
