@@ -29,12 +29,6 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" />
     </>
   ),
-  stopwatch: (
-    <>
-      <circle cx="12" cy="13" r="8" />
-      <path d="M12 9v4l2.5 2M9.5 2h5M12 2v3" />
-    </>
-  ),
   bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
   chart: <path d="M4 19h16M5 15l4-5 4 3 6-8" />,
 }
@@ -45,33 +39,35 @@ interface Bubble {
   icon: keyof typeof ICONS
   tone: Tone
   size: number
+  /** 그림 영역 기준 왼쪽 위 위치(%) */
   x: number
   y: number
-  delay: number
+  /** 떠다니는 요소는 2~3개만. 값은 애니메이션 지연(초) */
+  float?: number
 }
 
-// 위치는 그림 영역 기준 %. 크기가 다르게 흩어 두고, 위아래로 천천히 떠다니게 한다.
+// 가볍고 띄엄띄엄: 원 6개(큰 2 · 중간 2 · 작은 2), 점 3개, 카드 1개.
+// 색 비율 60:30:10 — 진한 빨강은 큰 모래시계와 점 하나뿐, 연빨강 원은 하나만.
+// 위치는 1440px(그림 영역 약 690×560)과 1024px(약 470×540) 모두에서 요소 사이가 40px 이상,
+// 가장자리에서 8% 이상 떨어지도록 맞췄다. 무리의 세로 중심이 영역(=폼)의 세로 중심과 맞는다.
 const BUBBLES: Bubble[] = [
-  { icon: 'hourglass', tone: 'brand', size: 88, x: 10, y: 22, delay: 0 },
-  { icon: 'clock', tone: 'dark', size: 64, x: 70, y: 8, delay: 1.2 },
-  { icon: 'percent', tone: 'tint', size: 56, x: 30, y: 52, delay: 0.6 },
-  { icon: 'database', tone: 'soft', size: 72, x: 78, y: 46, delay: 1.8 },
-  { icon: 'stopwatch', tone: 'tint', size: 48, x: 52, y: 26, delay: 2.4 },
-  { icon: 'bolt', tone: 'dark', size: 52, x: 60, y: 74, delay: 0.9 },
-  { icon: 'chart', tone: 'line', size: 60, x: 12, y: 78, delay: 1.5 },
+  { icon: 'hourglass', tone: 'brand', size: 96, x: 12, y: 20, float: 0 },
+  { icon: 'clock', tone: 'dark', size: 88, x: 70, y: 12 },
+  { icon: 'database', tone: 'soft', size: 64, x: 74, y: 52, float: 2.2 },
+  { icon: 'chart', tone: 'line', size: 64, x: 14, y: 73 },
+  { icon: 'bolt', tone: 'dark', size: 48, x: 50, y: 14 },
+  { icon: 'percent', tone: 'tint', size: 48, x: 56, y: 76 },
 ]
 
-const DOTS = [
-  { x: 42, y: 12, size: 8, tone: 'brand' },
-  { x: 90, y: 30, size: 6, tone: 'dark' },
-  { x: 24, y: 40, size: 10, tone: 'soft' },
-  { x: 86, y: 82, size: 9, tone: 'brand' },
-  { x: 44, y: 88, size: 6, tone: 'dark' },
+const DOTS: { x: number; y: number; size: number; tone: Tone }[] = [
+  { x: 42, y: 30, size: 8, tone: 'dark' },
+  { x: 86, y: 38, size: 8, tone: 'soft' },
+  { x: 88, y: 80, size: 9, tone: 'brand' },
 ]
 
 /**
- * 로그인·회원가입 화면 오른쪽 그림. 시간(모래시계·시계·스톱워치), 비율(%), 캐시(DB), 속도, 곡선 아이콘과
- * 서비스가 하는 일을 보여 주는 작은 카드(추천 TTL, 히트율)로 구성한다. 꾸밈용이라 스크린리더에서는 숨긴다.
+ * 로그인·회원가입 화면 오른쪽 그림. 시간(모래시계·시계), 비율(%), 캐시(DB), 속도, 곡선 아이콘과
+ * 서비스가 하는 일을 보여 주는 작은 카드(예상 히트율) 하나로 구성한다. 꾸밈용이라 스크린리더에서는 숨긴다.
  */
 export default function AuthIllustration() {
   return (
@@ -86,14 +82,14 @@ export default function AuthIllustration() {
       {BUBBLES.map((b) => (
         <span
           key={b.icon}
-          className={`auth-art__bubble auth-art__bubble--${b.tone}`}
+          className={`auth-art__bubble auth-art__bubble--${b.tone}${b.float !== undefined ? ' auth-art__float' : ''}`}
           style={
             {
               left: `${b.x}%`,
               top: `${b.y}%`,
               width: b.size,
               height: b.size,
-              '--float-delay': `${b.delay}s`,
+              '--float-delay': `${b.float ?? 0}s`,
             } as CSSProperties
           }
         >
@@ -103,11 +99,7 @@ export default function AuthIllustration() {
         </span>
       ))}
 
-      <div className="auth-art__card auth-art__card--ttl" style={{ '--float-delay': '0.4s' } as CSSProperties}>
-        <span className="auth-art__card-label">추천 TTL</span>
-        <strong className="auth-art__card-value">300s</strong>
-      </div>
-      <div className="auth-art__card auth-art__card--hit" style={{ '--float-delay': '2s' } as CSSProperties}>
+      <div className="auth-art__card auth-art__float" style={{ '--float-delay': '1.1s' } as CSSProperties}>
         <span className="auth-art__card-label">예상 히트율</span>
         <strong className="auth-art__card-value">91%</strong>
         <span className="auth-art__bar">

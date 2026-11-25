@@ -440,8 +440,8 @@ h1 {
   inset: 0;
 }
 
-.auth-art__bubble,
-.auth-art__card {
+/* 떠다니는 건 2~3개만, 진폭은 작게 */
+.auth-art__float {
   animation: auth-float 6s ease-in-out infinite;
   animation-delay: var(--float-delay, 0s);
 }
@@ -451,7 +451,7 @@ h1 {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  box-shadow: 0 10px 24px rgb(0 0 0 / 0.08);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.1);
 }
 
 .auth-art__bubble svg {
@@ -475,17 +475,21 @@ h1 {
 .auth-art__bubble--tint {
   color: var(--color-brand);
   background: #fdecec;
+  box-shadow: none;
 }
 
 .auth-art__bubble--soft {
   color: #3a3a3e;
   background: #f1f1f3;
+  /* 연회색 원은 그림자가 퍼지면 탁해 보여서 짧고 옅게 */
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.04);
 }
 
 .auth-art__bubble--line {
-  color: var(--color-brand);
+  color: #1c1c1e;
   background: #fff;
   border: 1px solid var(--color-border);
+  box-shadow: none;
 }
 
 .auth-art__dot {
@@ -507,6 +511,9 @@ h1 {
 
 .auth-art__card {
   position: absolute;
+  left: 32%;
+  top: 47%;
+  width: 150px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -515,17 +522,6 @@ h1 {
   border: 1px solid #ececef;
   border-radius: 14px;
   box-shadow: 0 12px 28px rgb(0 0 0 / 0.08);
-}
-
-.auth-art__card--ttl {
-  left: 34%;
-  top: 6%;
-}
-
-.auth-art__card--hit {
-  left: 36%;
-  top: 62%;
-  min-width: 140px;
 }
 
 .auth-art__card-label {
@@ -561,13 +557,12 @@ h1 {
   }
 
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-5px);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .auth-art__bubble,
-  .auth-art__card {
+  .auth-art__float {
     animation: none;
   }
 }
