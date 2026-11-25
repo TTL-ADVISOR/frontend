@@ -33,7 +33,7 @@ const ICONS: Record<string, ReactNode> = {
   chart: <path d="M4 19h16M5 15l4-5 4 3 6-8" />,
 }
 
-type Tone = 'brand' | 'dark' | 'tint' | 'soft' | 'line'
+type Tone = 'brand' | 'dark' | 'tint' | 'soft' | 'line' | 'gold' | 'peach'
 
 interface Bubble {
   icon: keyof typeof ICONS
@@ -47,21 +47,22 @@ interface Bubble {
 }
 
 // 가볍고 띄엄띄엄: 원 6개(큰 2 · 중간 2 · 작은 2), 점 3개, 카드 1개.
-// 색 비율 60:30:10 — 진한 빨강은 큰 모래시계와 점 하나뿐, 연빨강 원은 하나만.
+// 색: 빨강·검정·흰색이 기본이고, 빨강과 같은 따뜻한 계열인 앰버(골드)와 피치를 곁들여 다채롭게 한다.
+// 진한 빨강은 큰 모래시계와 점 하나뿐, 연빨강 원은 하나만.
 // 위치는 1440px(그림 영역 약 690×560)과 1024px(약 470×540) 모두에서 요소 사이가 40px 이상,
 // 가장자리에서 8% 이상 떨어지도록 맞췄다. 무리의 세로 중심이 영역(=폼)의 세로 중심과 맞는다.
 const BUBBLES: Bubble[] = [
   { icon: 'hourglass', tone: 'brand', size: 96, x: 12, y: 20, float: 0 },
   { icon: 'clock', tone: 'dark', size: 88, x: 70, y: 12 },
-  { icon: 'database', tone: 'soft', size: 64, x: 74, y: 52, float: 2.2 },
+  { icon: 'database', tone: 'gold', size: 64, x: 74, y: 52, float: 2.2 },
   { icon: 'chart', tone: 'line', size: 64, x: 14, y: 73 },
-  { icon: 'bolt', tone: 'dark', size: 48, x: 50, y: 14 },
+  { icon: 'bolt', tone: 'peach', size: 48, x: 50, y: 14 },
   { icon: 'percent', tone: 'tint', size: 48, x: 56, y: 76 },
 ]
 
 const DOTS: { x: number; y: number; size: number; tone: Tone }[] = [
   { x: 42, y: 30, size: 8, tone: 'dark' },
-  { x: 86, y: 38, size: 8, tone: 'soft' },
+  { x: 86, y: 38, size: 8, tone: 'gold' },
   { x: 88, y: 80, size: 9, tone: 'brand' },
 ]
 

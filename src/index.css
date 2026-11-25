@@ -485,6 +485,18 @@ h1 {
   box-shadow: 0 2px 6px rgb(0 0 0 / 0.04);
 }
 
+.auth-art__bubble--gold {
+  color: #fff;
+  background: linear-gradient(145deg, #f8c14a, #e8930c);
+  box-shadow: 0 6px 14px rgb(232 147 12 / 0.22);
+}
+
+.auth-art__bubble--peach {
+  color: #d9480f;
+  background: #ffe8dc;
+  box-shadow: none;
+}
+
 .auth-art__bubble--line {
   color: #1c1c1e;
   background: #fff;
@@ -503,6 +515,10 @@ h1 {
 
 .auth-art__dot--dark {
   background: #1c1c1e;
+}
+
+.auth-art__dot--gold {
+  background: #f2a93b;
 }
 
 .auth-art__dot--soft {
@@ -546,7 +562,8 @@ h1 {
 .auth-art__bar span {
   display: block;
   height: 100%;
-  background: var(--color-brand);
+  /* 빨강에서 앰버로: 그림 전체의 따뜻한 색을 카드에도 잇는다 */
+  background: linear-gradient(90deg, var(--color-brand), #f2a93b);
   border-radius: inherit;
 }
 
