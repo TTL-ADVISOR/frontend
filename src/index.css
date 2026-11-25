@@ -358,8 +358,9 @@ h1 {
 }
 
 .auth-shell__art {
-  position: relative;
-  height: min(560px, 70vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 900px) {
@@ -436,8 +437,12 @@ h1 {
 /* ---- 로그인 화면 그림 ---- */
 
 .auth-art {
-  position: absolute;
-  inset: 0;
+  /* 레퍼런스 무리 영역 비율(840×580). 원 크기는 이 영역 너비(cqw) 기준이라 화면 폭이 바뀌어도 배치 비율이 같다 */
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  aspect-ratio: 840 / 580;
+  container-type: inline-size;
 }
 
 /* 떠다니는 건 2~3개만, 진폭은 작게 */
@@ -455,6 +460,8 @@ h1 {
 }
 
 .auth-art__bubble svg {
+  width: 42%;
+  height: 42%;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
