@@ -29,6 +29,13 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" />
     </>
   ),
+  history: (
+    <>
+      <path d="M3 12a9 9 0 1 0 2.6-6.4L3 8" />
+      <path d="M3 3v5h5" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
   bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
   chart: <path d="M4 19h16M5 15l4-5 4 3 6-8" />,
 }
@@ -46,7 +53,7 @@ interface Bubble {
   float?: number
 }
 
-// 가볍고 띄엄띄엄: 원 6개(큰 2 · 중간 2 · 작은 2), 점 3개.
+// 가볍고 띄엄띄엄: 원 7개(큰 2 · 가운데 72 하나 · 중간 2 · 작은 2), 점 3개.
 // 색: 빨강·검정·흰색이 기본이고, 빨강과 같은 따뜻한 계열인 앰버(골드)와 피치를 곁들여 다채롭게 한다.
 // 진한 빨강은 큰 모래시계와 점 하나뿐, 연빨강 원은 하나만.
 // 위치는 1440px(그림 영역 약 690×560)과 1024px(약 470×540) 모두에서 요소 사이가 40px 이상,
@@ -58,6 +65,8 @@ const BUBBLES: Bubble[] = [
   { icon: 'chart', tone: 'line', size: 64, x: 14, y: 73 },
   { icon: 'bolt', tone: 'peach', size: 48, x: 50, y: 14 },
   { icon: 'percent', tone: 'tint', size: 48, x: 56, y: 76 },
+  // 가운데: 만료·갱신(TTL)을 뜻하는 아이콘. 다른 원과 크기가 겹치지 않게 72px, 차분한 연회색
+  { icon: 'history', tone: 'soft', size: 72, x: 38, y: 47 },
 ]
 
 const DOTS: { x: number; y: number; size: number; tone: Tone }[] = [
@@ -67,7 +76,7 @@ const DOTS: { x: number; y: number; size: number; tone: Tone }[] = [
 ]
 
 /**
- * 로그인·회원가입 화면 오른쪽 그림. 시간(모래시계·시계), 비율(%), 캐시(DB), 속도, 곡선 아이콘으로 구성한다. 꾸밈용이라 스크린리더에서는 숨긴다.
+ * 로그인·회원가입 화면 오른쪽 그림. 시간(모래시계·시계), 만료·갱신, 비율(%), 캐시(DB), 속도, 곡선 아이콘으로 구성한다. 꾸밈용이라 스크린리더에서는 숨긴다.
  */
 export default function AuthIllustration() {
   return (
