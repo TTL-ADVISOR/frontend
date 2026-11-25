@@ -46,7 +46,7 @@ interface Bubble {
   float?: number
 }
 
-// 가볍고 띄엄띄엄: 원 6개(큰 2 · 중간 2 · 작은 2), 점 3개, 카드 1개.
+// 가볍고 띄엄띄엄: 원 6개(큰 2 · 중간 2 · 작은 2), 점 3개.
 // 색: 빨강·검정·흰색이 기본이고, 빨강과 같은 따뜻한 계열인 앰버(골드)와 피치를 곁들여 다채롭게 한다.
 // 진한 빨강은 큰 모래시계와 점 하나뿐, 연빨강 원은 하나만.
 // 위치는 1440px(그림 영역 약 690×560)과 1024px(약 470×540) 모두에서 요소 사이가 40px 이상,
@@ -67,8 +67,7 @@ const DOTS: { x: number; y: number; size: number; tone: Tone }[] = [
 ]
 
 /**
- * 로그인·회원가입 화면 오른쪽 그림. 시간(모래시계·시계), 비율(%), 캐시(DB), 속도, 곡선 아이콘과
- * 서비스가 하는 일을 보여 주는 작은 카드(예상 히트율) 하나로 구성한다. 꾸밈용이라 스크린리더에서는 숨긴다.
+ * 로그인·회원가입 화면 오른쪽 그림. 시간(모래시계·시계), 비율(%), 캐시(DB), 속도, 곡선 아이콘으로 구성한다. 꾸밈용이라 스크린리더에서는 숨긴다.
  */
 export default function AuthIllustration() {
   return (
@@ -99,14 +98,6 @@ export default function AuthIllustration() {
           </svg>
         </span>
       ))}
-
-      <div className="auth-art__card auth-art__float" style={{ '--float-delay': '1.1s' } as CSSProperties}>
-        <span className="auth-art__card-label">예상 히트율</span>
-        <strong className="auth-art__card-value">91%</strong>
-        <span className="auth-art__bar">
-          <span style={{ width: '91%' }} />
-        </span>
-      </div>
     </div>
   )
 }

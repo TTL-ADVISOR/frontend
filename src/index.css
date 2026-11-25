@@ -525,48 +525,6 @@ h1 {
   background: #d4d4d8;
 }
 
-.auth-art__card {
-  position: absolute;
-  left: 32%;
-  top: 47%;
-  width: 150px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 12px 16px;
-  background: #fff;
-  border: 1px solid #ececef;
-  border-radius: 14px;
-  box-shadow: 0 12px 28px rgb(0 0 0 / 0.08);
-}
-
-.auth-art__card-label {
-  font-size: 0.75rem;
-  color: var(--color-muted);
-}
-
-.auth-art__card-value {
-  font-size: 1.25rem;
-  letter-spacing: -0.01em;
-}
-
-.auth-art__bar {
-  display: block;
-  height: 6px;
-  margin-top: 6px;
-  overflow: hidden;
-  background: #f1f1f3;
-  border-radius: 3px;
-}
-
-.auth-art__bar span {
-  display: block;
-  height: 100%;
-  /* 빨강에서 앰버로: 그림 전체의 따뜻한 색을 카드에도 잇는다 */
-  background: linear-gradient(90deg, var(--color-brand), #f2a93b);
-  border-radius: inherit;
-}
-
 @keyframes auth-float {
   0%,
   100% {
