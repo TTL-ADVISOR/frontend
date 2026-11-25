@@ -45,7 +45,8 @@ export default function SignupPage() {
   return (
     <section className="auth">
       <h1 className="auth__title">회원가입</h1>
-      <form className="card auth__form" onSubmit={handleSubmit} noValidate>
+      <p className="auth__subtitle">접근 로그를 올리면 API마다 알맞은 TTL을 근거와 함께 추천해 드려요.</p>
+      <form className="auth__form" onSubmit={handleSubmit} noValidate>
         {formError && (
           <p role="alert" className="notice notice--error auth__notice">
             {formError}
