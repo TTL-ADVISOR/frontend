@@ -330,23 +330,80 @@ h1 {
   background: #f4f4f5;
 }
 
-/* ---- 로그인·회원가입 ---- */
+/* ---- 로그인·회원가입 화면 ---- */
+
+.auth-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #fff;
+}
+
+.auth-shell__header {
+  padding: 28px 40px;
+}
+
+.auth-shell__main {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 48px;
+  padding: 0 40px 64px;
+}
+
+.auth-shell__form {
+  display: flex;
+  justify-content: center;
+}
+
+.auth-shell__art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .auth-shell__header {
+    padding: 20px 24px;
+  }
+
+  .auth-shell__main {
+    grid-template-columns: 1fr;
+    padding: 24px 24px 48px;
+  }
+
+  .auth-shell__art {
+    display: none;
+  }
+}
 
 .auth {
+  width: 100%;
   max-width: 400px;
-  margin: 32px auto 0;
 }
 
 .auth__title {
-  margin: 0 0 16px;
-  text-align: center;
+  margin: 0 0 8px;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.auth__subtitle {
+  margin: 0 0 32px;
+  color: var(--color-muted);
 }
 
 .auth__form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px;
+  gap: 18px;
+}
+
+.auth__form .input {
+  padding: 11px 14px;
+  border-radius: 10px;
 }
 
 .auth__notice {
@@ -355,18 +412,141 @@ h1 {
 
 .auth__submit {
   width: 100%;
-  padding: 10px 16px;
+  margin-top: 6px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 1rem;
 }
 
 .auth__switch {
-  margin-top: 16px;
+  margin-top: 24px;
   text-align: center;
 }
 
 .auth__switch a {
-  color: var(--color-text);
+  color: var(--color-brand);
   font-weight: 600;
+  text-decoration: none;
+}
+
+.auth__switch a:hover {
+  text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* ---- 로그인 화면 그림 ---- */
+
+.auth-art {
+  /* 레퍼런스 무리 영역 비율(840×580). 원 크기는 이 영역 너비(cqw) 기준이라 화면 폭이 바뀌어도 배치 비율이 같다 */
+  position: relative;
+  width: 100%;
+  max-width: 760px;
+  aspect-ratio: 840 / 580;
+  container-type: inline-size;
+}
+
+/* 떠다니는 건 2~3개만, 진폭은 작게 */
+.auth-art__float {
+  animation: auth-float 6s ease-in-out infinite;
+  animation-delay: var(--float-delay, 0s);
+}
+
+.auth-art__bubble {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.1);
+}
+
+.auth-art__bubble svg {
+  width: 42%;
+  height: 42%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.auth-art__bubble--brand {
+  color: #fff;
+  background: linear-gradient(145deg, #f0353d, #c50e16);
+}
+
+.auth-art__bubble--dark {
+  color: #fff;
+  background: linear-gradient(145deg, #3a3a3e, #1c1c1e);
+}
+
+.auth-art__bubble--tint {
+  color: var(--color-brand);
+  background: #fdecec;
+  box-shadow: none;
+}
+
+.auth-art__bubble--soft {
+  color: #3a3a3e;
+  background: #f1f1f3;
+  /* 연회색 원은 그림자가 퍼지면 탁해 보여서 짧고 옅게 */
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.04);
+}
+
+.auth-art__bubble--gold {
+  color: #fff;
+  background: linear-gradient(145deg, #f8c14a, #e8930c);
+  box-shadow: 0 6px 14px rgb(232 147 12 / 0.22);
+}
+
+.auth-art__bubble--peach {
+  color: #d9480f;
+  background: #ffe8dc;
+  box-shadow: none;
+}
+
+.auth-art__bubble--line {
+  color: #1c1c1e;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+
+.auth-art__dot {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.auth-art__dot--brand {
+  background: var(--color-brand);
+}
+
+.auth-art__dot--dark {
+  background: #1c1c1e;
+}
+
+.auth-art__dot--gold {
+  background: #f2a93b;
+}
+
+.auth-art__dot--soft {
+  background: #d4d4d8;
+}
+
+@keyframes auth-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-art__float {
+    animation: none;
+  }
 }
 
 .field {

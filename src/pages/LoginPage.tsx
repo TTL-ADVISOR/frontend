@@ -43,7 +43,8 @@ export default function LoginPage() {
   return (
     <section className="auth">
       <h1 className="auth__title">로그인</h1>
-      <form className="card auth__form" onSubmit={handleSubmit} noValidate>
+      <p className="auth__subtitle">다시 오신 걸 환영해요. 계정 정보를 입력해 주세요.</p>
+      <form className="auth__form" onSubmit={handleSubmit} noValidate>
         {formError && (
           <p role="alert" className="notice notice--error auth__notice">
             {formError}
