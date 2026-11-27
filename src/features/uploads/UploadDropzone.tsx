@@ -55,7 +55,10 @@ export default function UploadDropzone({ projectId, onAccepted }: Props) {
           event.preventDefault()
           if (!mutation.isPending) setDragging(true)
         }}
-        onDragLeave={() => setDragging(false)}
+        onDragLeave={(event) => {
+          // 안쪽 요소(버튼 등)로 옮겨 갈 때도 dragleave가 나므로, 영역 밖으로 나갔을 때만 끈다
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false)
+        }}
         onDrop={handleDrop}
       >
         {sending ? (

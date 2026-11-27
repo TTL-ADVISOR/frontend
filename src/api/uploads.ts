@@ -100,7 +100,8 @@ function sendFile(projectId: number, file: File, onProgress?: (ratio: number) =>
       }
       reject(new ApiError(xhr.status, parseErrorBody(xhr.status, xhr.responseText)))
     }
-    xhr.onerror = () =>
+    // 연결 실패·중단·시간 초과 모두 "서버에 닿지 못함"으로 끝낸다 (Promise가 영원히 기다리지 않게)
+    xhr.onerror = xhr.onabort = xhr.ontimeout = () =>
       reject(
         new ApiError(0, {
           code: CLIENT_ERROR_CODES.NETWORK_ERROR,

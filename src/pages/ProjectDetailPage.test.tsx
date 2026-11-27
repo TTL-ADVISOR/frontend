@@ -251,3 +251,49 @@ describe('로그 업로드', () => {
     )
   })
 })
+
+describe('로그 업로드 (화면 상태)', () => {
+  it('다른 프로젝트로 옮기면 앞 프로젝트에서 고른 업로드를 보여 주지 않는다', async () => {
+    withProject([upload({ id: 2, filename: 'new.jsonl' }), upload({ id: 1, filename: 'old.jsonl' })])
+    server.use(
+      http.get('/api/projects/2', () => HttpResponse.json({ ...project, id: 2, name: '주문 API' })),
+      http.get('/api/projects/2/uploads', () =>
+        HttpResponse.json([summaryOf(upload({ id: 5, projectId: 2, filename: 'orders.jsonl' }))]),
+      ),
+      http.get('/api/uploads/5', () => HttpResponse.json(upload({ id: 5, projectId: 2, filename: 'orders.jsonl' }))),
+    )
+
+    // 프로젝트 2를 먼저 열어 캐시에 남긴다 (다시 올 때 로딩 화면 없이 바로 그려지는 경우)
+    const { router } = renderRoute('/projects/2')
+    await screen.findByRole('article', { name: 'orders.jsonl 처리 상태' })
+    await router.navigate('/projects/1')
+    await screen.findByRole('article', { name: 'new.jsonl 처리 상태' })
+    await userEvent.click(within(screen.getByRole('list', { name: '업로드 이력' })).getByRole('button', { name: /old/ }))
+    await screen.findByRole('article', { name: 'old.jsonl 처리 상태' })
+
+    await router.navigate('/projects/2')
+
+    expect(await screen.findByRole('article', { name: 'orders.jsonl 처리 상태' })).toBeInTheDocument()
+    expect(screen.queryByRole('article', { name: 'old.jsonl 처리 상태' })).not.toBeInTheDocument()
+  })
+
+  it('처리 중 상태를 다시 불러오다 실패해도 마지막 상태를 계속 보여 준다', async () => {
+    let calls = 0
+    withProject([upload({ id: 40, status: 'PARSING', totalLines: null, processedLines: 700 })])
+    server.use(
+      http.get('/api/uploads/40', () => {
+        calls += 1
+        return calls === 1
+          ? HttpResponse.json(upload({ id: 40, status: 'PARSING', totalLines: null, processedLines: 700 }))
+          : HttpResponse.json({ code: 'UPLOAD_NOT_FOUND', message: '업로드를 찾을 수 없습니다.', details: {} }, { status: 404 })
+      }),
+    )
+
+    renderRoute('/projects/1')
+    const card = await screen.findByRole('article', { name: 'access.jsonl 처리 상태' })
+    expect(within(card).getByText('700줄 처리함')).toBeInTheDocument()
+    await waitFor(() => expect(calls).toBeGreaterThan(1), { timeout: 3000 })
+
+    expect(screen.getByRole('article', { name: 'access.jsonl 처리 상태' })).toHaveTextContent('700줄 처리함')
+  })
+})

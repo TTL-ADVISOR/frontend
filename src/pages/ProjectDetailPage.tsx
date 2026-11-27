@@ -34,7 +34,8 @@ export default function ProjectDetailPage() {
           <time dateTime={project.data.createdAt}>{formatDateTime(project.data.createdAt)}</time>에 만듦
         </p>
       </header>
-      <UploadSection projectId={projectId} />
+      {/* 프로젝트가 바뀌면 고른 업로드 같은 화면 상태를 새로 시작한다 */}
+      <UploadSection key={projectId} projectId={projectId} />
     </section>
   )
 }

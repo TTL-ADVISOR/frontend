@@ -11,8 +11,11 @@ const n = (value: number) => numberFormat.format(value)
 export default function UploadDetailCard({ uploadId }: { uploadId: number }) {
   const upload = useUpload(uploadId)
 
-  if (upload.isPending) return <Loading label="업로드 상태를 불러오는 중…" />
-  if (upload.isError) return <ErrorMessage error={upload.error} onRetry={() => upload.refetch()} />
+  // 폴링 중 한 번 실패해도 마지막으로 받은 상태는 계속 보여 준다 (다음 주기에 다시 불러온다)
+  if (upload.data === undefined) {
+    if (upload.isError) return <ErrorMessage error={upload.error} onRetry={() => upload.refetch()} />
+    return <Loading label="업로드 상태를 불러오는 중…" />
+  }
 
   return (
     <article className="card upload-detail" aria-label={`${upload.data.filename} 처리 상태`}>
