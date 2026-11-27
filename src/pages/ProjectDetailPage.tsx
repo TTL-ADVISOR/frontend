@@ -2,9 +2,10 @@ import { Link, useParams } from 'react-router'
 import { ApiError } from '../api/client'
 import { ErrorMessage, Loading } from '../components/QueryState'
 import { useProject } from '../features/projects/queries'
+import UploadSection from '../features/uploads/UploadSection'
 import { formatDateTime } from '../lib/format'
 
-/** 프로젝트 화면. 로그 업로드(F3)와 정책 관리(F4)가 여기에 붙는다. */
+/** 프로젝트 화면: 로그 업로드(F3). 정책 관리(F4)가 여기에 붙는다. */
 export default function ProjectDetailPage() {
   const projectId = Number(useParams().projectId)
   const project = useProject(projectId)
@@ -33,10 +34,7 @@ export default function ProjectDetailPage() {
           <time dateTime={project.data.createdAt}>{formatDateTime(project.data.createdAt)}</time>에 만듦
         </p>
       </header>
-      <div className="card empty">
-        <p className="empty__title">아직 올린 로그가 없습니다</p>
-        <p className="muted">로그 업로드는 다음 단계에서 추가됩니다.</p>
-      </div>
+      <UploadSection projectId={projectId} />
     </section>
   )
 }

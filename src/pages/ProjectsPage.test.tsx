@@ -78,6 +78,7 @@ describe('프로젝트 생성', () => {
         return HttpResponse.json({ id: 5, name: '결제 API', createdAt: '2026-11-24T01:00:00.000Z' }, { status: 201 })
       }),
       http.get('/api/projects/5', () => HttpResponse.json(summary({ id: 5, name: '결제 API' }))),
+      http.get('/api/projects/5/uploads', () => HttpResponse.json([])),
     )
 
     const { router } = renderRoute('/projects')
@@ -148,6 +149,7 @@ describe('프로젝트 생성', () => {
         return HttpResponse.json({ id: 9, name: 'a', createdAt: '2026-11-24T01:00:00.000Z' }, { status: 201 })
       }),
       http.get('/api/projects/9', () => HttpResponse.json(summary({ id: 9, name: 'a' }))),
+      http.get('/api/projects/9/uploads', () => HttpResponse.json([])),
     )
 
     renderRoute('/projects')
