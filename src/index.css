@@ -573,3 +573,293 @@ h1 {
 .field .field-error {
   margin: 0;
 }
+
+/* ---- 로그 업로드 (프로젝트 화면) ---- */
+
+.section-title {
+  margin: 8px 0 0;
+  font-size: 1.125rem;
+}
+
+.section-subtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 36px 16px;
+  text-align: center;
+  border: 1.5px dashed #c4c8cf;
+  border-radius: 12px;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.dropzone--active {
+  border-color: var(--color-brand);
+  background: #fff5f5;
+}
+
+.dropzone__title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.dropzone__hint {
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+}
+
+.dropzone__sending {
+  width: min(420px, 100%);
+}
+
+.progress {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  background: #ececef;
+  accent-color: var(--color-primary);
+}
+
+.progress::-webkit-progress-bar {
+  background: #ececef;
+  border-radius: 999px;
+}
+
+.progress::-webkit-progress-value {
+  background: var(--color-primary);
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+.progress::-moz-progress-bar {
+  background: var(--color-primary);
+  border-radius: 999px;
+}
+
+.badge {
+  display: inline-block;
+  flex: none;
+  padding: 2px 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badge--uploaded,
+.badge--parsing {
+  color: #3a3a3e;
+  background: #f1f1f3;
+}
+
+.badge--parsed {
+  color: #1d7a46;
+  background: #e6f6ec;
+}
+
+.badge--failed {
+  color: var(--color-danger);
+  background: #fdecec;
+}
+
+.upload-detail__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.upload-detail__name {
+  margin: 0;
+  overflow: hidden;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-detail__progress p {
+  margin: 0;
+}
+
+.upload-detail__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 0;
+}
+
+.upload-detail__facts dt {
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.upload-detail__facts dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.upload-detail__failure {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+.upload-detail__example {
+  margin: 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  background: #f6f6f7;
+  border-radius: 8px;
+}
+
+.upload-detail__samples summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.table {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table th {
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.table td:first-child {
+  width: 88px;
+  font-variant-numeric: tabular-nums;
+}
+
+.upload-history-wrap {
+  gap: 8px;
+}
+
+.upload-history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.upload-history li + li {
+  border-top: 1px solid var(--color-border);
+}
+
+.upload-history__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 16px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: var(--color-surface);
+  border: none;
+  cursor: pointer;
+}
+
+.upload-history__item:hover {
+  background: #f8f8f9;
+}
+
+.upload-history__item[aria-current='true'] {
+  background: #f4f4f5;
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.upload-history__item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.upload-history__name {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-history__meta {
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .upload-history__item {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .upload-history__meta {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+
+/* 끝을 모르는 진행 막대: 짧은 막대가 좌우로 지나간다 */
+.progress-indeterminate {
+  position: relative;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ececef;
+}
+
+.progress-indeterminate span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 30%;
+  border-radius: 999px;
+  background: var(--color-primary);
+  animation: progress-slide 1.4s ease-in-out infinite;
+}
+
+@keyframes progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(340%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropzone,
+  .progress::-webkit-progress-value {
+    transition: none;
+  }
+
+  .progress-indeterminate span {
+    width: 100%;
+    opacity: 0.35;
+    animation: none;
+  }
+}

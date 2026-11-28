@@ -61,7 +61,7 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
 }
 
 /** 로그인 여부와 상관없이 응답에 XSRF-TOKEN 쿠키가 실리는 API를 불러 토큰을 새로 받는다. */
-async function refreshCsrfToken(): Promise<void> {
+export async function refreshCsrfToken(): Promise<void> {
   try {
     await fetch(`${API_BASE}/auth/me`, { headers: { Accept: 'application/json' } })
   } catch {
@@ -105,9 +105,20 @@ async function request<T>(path: string, options: RequestOptions): Promise<T> {
 }
 
 async function readError(response: Response): Promise<ErrorResponse> {
+  let text = ''
   try {
-    const body = (await response.json()) as Partial<ErrorResponse>
-    if (typeof body.code === 'string' && typeof body.message === 'string') {
+    text = await response.text()
+  } catch {
+    // 본문을 읽지 못하면 상태 코드만으로 안내한다
+  }
+  return parseErrorBody(response.status, text)
+}
+
+/** 에러 응답 본문(JSON 문자열)을 공통 형식으로 바꾼다. 형식이 다르면 상태 코드로 안내한다. */
+export function parseErrorBody(status: number, text: string): ErrorResponse {
+  try {
+    const body = JSON.parse(text) as Partial<ErrorResponse> | null
+    if (body && typeof body.code === 'string' && typeof body.message === 'string') {
       return { code: body.code, message: body.message, details: body.details ?? {} }
     }
   } catch {
@@ -115,7 +126,7 @@ async function readError(response: Response): Promise<ErrorResponse> {
   }
   return {
     code: CLIENT_ERROR_CODES.UNKNOWN_ERROR,
-    message: `요청을 처리하지 못했습니다. (HTTP ${response.status})`,
+    message: `요청을 처리하지 못했습니다. (HTTP ${status})`,
     details: {},
   }
 }
