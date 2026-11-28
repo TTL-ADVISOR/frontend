@@ -62,9 +62,8 @@ export default function Layout() {
             <Icon name="close" />
           </button>
         </div>
-        <Navigation />
-        <div className="sidebar__foot">
-          <Account />
+        {/* 로고 바로 아래: 넓은 화면에서 사이드바를 아이콘만 남기고 접는다 */}
+        <div className="sidebar__toggle">
           <button
             type="button"
             className="sidebar__item sidebar__collapse"
@@ -75,6 +74,10 @@ export default function Layout() {
             <Icon name={collapsed ? 'expand' : 'collapse'} />
             <span className="sidebar__label">접기</span>
           </button>
+        </div>
+        <Navigation />
+        <div className="sidebar__foot">
+          <Account />
         </div>
       </aside>
       <div className="shell__scrim" aria-hidden="true" onClick={() => setDrawerOpen(false)} />

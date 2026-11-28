@@ -865,6 +865,14 @@ h1 {
   padding: 0 20px;
 }
 
+.sidebar__toggle {
+  padding: 0 12px 4px;
+}
+
+.sidebar__collapse {
+  color: var(--color-muted);
+}
+
 .sidebar__nav {
   display: flex;
   flex: 1;
@@ -1146,7 +1154,7 @@ h1 {
     display: grid;
   }
 
-  .sidebar__collapse {
+  .sidebar__toggle {
     display: none;
   }
 
