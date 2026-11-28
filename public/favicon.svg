@@ -1,8 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -65 385 385" width="32" height="32">
   <title>TTL Advisor</title>
-  <mask id="slit" maskUnits="userSpaceOnUse" x="-10" y="-10" width="400" height="280">
-    <rect x="-10" y="-10" width="400" height="280" fill="#fff"/>
-    <rect x="-10" y="112" width="400" height="20" fill="#000"/>
-  </mask>
-  <path d="M15 0H335L377 255H310L303 208H203L172 255H108L232 60H145L97 255H33L80 60H0Z M283 72L300 164H225Z" fill="#E5121B" fill-rule="evenodd" mask="url(#slit)"/>
+  <!-- 파비콘(16~32px)에서는 가로 슬릿이 뭉개져서 뺀 단순 버전을 쓴다. 화면의 로고(BrandMark)는 슬릿이 있다 -->
+  <path d="M15 0H335L377 255H310L303 208H203L172 255H108L232 60H145L97 255H33L80 60H0Z M283 72L300 164H225Z" fill="#E5121B" fill-rule="evenodd"/>
 </svg>

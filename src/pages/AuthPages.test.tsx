@@ -183,7 +183,7 @@ describe('회원가입', () => {
 })
 
 describe('로그아웃', () => {
-  it('로그아웃하면 (돌아갈 주소 없이) 로그인 화면으로 가고 헤더의 계정 정보가 사라진다', async () => {
+  it('로그아웃하면 (돌아갈 주소 없이) 소개 화면으로 가고 계정 정보가 사라진다', async () => {
     let loggedIn = true
     server.use(
       http.get('/api/auth/me', () =>
@@ -201,9 +201,9 @@ describe('로그아웃', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: '로그아웃' }))
 
-    expect(await screen.findByRole('heading', { name: '로그인' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: '시작하기' })).toBeInTheDocument()
     // 직접 로그아웃하면 보던 화면으로 돌아오는 ?next=를 남기지 않는다
-    await waitFor(() => expect(router.state.location.pathname + router.state.location.search).toBe('/login'))
+    await waitFor(() => expect(router.state.location.pathname + router.state.location.search).toBe('/'))
     expect(screen.queryByText('박개발')).not.toBeInTheDocument()
   })
 })
