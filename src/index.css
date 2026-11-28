@@ -64,7 +64,13 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --icon-alert: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8v5M12 16.5v.01'/%3E%3C/svg%3E");
 
-  font-family: 'Pretendard Variable', 'Pretendard', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
+  font-family:
+    'Pretendard Variable',
+    'Pretendard',
+    system-ui,
+    -apple-system,
+    'Apple SD Gothic Neo',
+    sans-serif;
   color: var(--color-text);
   background: var(--color-bg);
   line-height: 1.5;
@@ -343,18 +349,85 @@ code {
   padding: 0 40px 64px;
 }
 
-/* 오른쪽: 브랜드 빨강 면에 큰 로고 하나 (장식) */
+/* 오른쪽: 먹색 면에 추천 기준과 결과 예시, 아래에 빨간 로고. 빨강은 로고와 추천 TTL에만 */
 .auth-panel {
   display: flex;
-  align-items: flex-end;
-  padding: clamp(40px, 7vh, 72px) clamp(32px, 5vw, 72px);
-  background: var(--color-brand);
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
+  padding: clamp(48px, 11vh, 112px) clamp(32px, 5vw, 72px) clamp(40px, 7vh, 72px);
+  color: var(--gray-300);
+  background: var(--gray-950);
+}
+
+.auth-panel__title {
+  margin: 0 0 36px;
+  font-size: clamp(1.5rem, 2.3vw, 2.125rem);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.03em;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.auth-panel__table {
+  width: 100%;
+  max-width: 480px;
+  font-size: 0.875rem;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.auth-panel__table th,
+.auth-panel__table td {
+  padding: 14px 0 14px 16px;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid rgb(255 255 255 / 0.1);
+}
+
+.auth-panel__table th:first-child {
+  padding-left: 0;
+  text-align: left;
+}
+
+.auth-panel__table thead th {
+  padding-top: 0;
+  padding-bottom: 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--gray-400);
+}
+
+.auth-panel__table tbody th code {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.auth-panel__ttl {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--red-on-dark);
+}
+
+.auth-panel__verdict {
+  font-size: 0.8125rem;
+  color: var(--gray-400);
+}
+
+.auth-panel__caption {
+  padding-top: 12px;
+  font-size: 0.75rem;
+  color: var(--gray-400);
+  text-align: left;
+  caption-side: bottom;
 }
 
 .auth-panel__mark {
-  width: clamp(160px, 18vw, 240px);
+  width: clamp(96px, 10vw, 136px);
   height: auto;
-  color: #fff;
+  color: var(--color-brand);
 }
 
 @media (max-width: 900px) {

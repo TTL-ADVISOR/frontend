@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
@@ -101,8 +101,10 @@ describe('로그인', () => {
     expect(reveal).toHaveAttribute('aria-pressed', 'true')
     await userEvent.click(reveal)
     expect(password).toHaveAttribute('type', 'password')
-    // 오른쪽 빨강 면은 로고만 있는 장식이라 화면 읽기 프로그램에 드러나지 않는다
-    expect(screen.queryByRole('complementary')).not.toBeInTheDocument()
+    // 오른쪽 면은 폼 부제목과 다른 내용(추천 기준과 결과 예시)을 보여 준다
+    const panel = screen.getByRole('complementary')
+    expect(within(panel).getByRole('heading', { level: 2 })).toHaveTextContent('오래된 응답은 1% 이하로')
+    expect(within(panel).getAllByRole('row')).toHaveLength(4)
   })
 
   it('이미 로그인했으면 로그인 화면 대신 프로젝트 목록으로 간다', async () => {
