@@ -101,10 +101,12 @@ describe('로그인', () => {
     expect(reveal).toHaveAttribute('aria-pressed', 'true')
     await userEvent.click(reveal)
     expect(password).toHaveAttribute('type', 'password')
-    // 오른쪽 면은 폼 부제목과 다른 내용(추천 기준과 결과 예시)을 보여 준다
+    // 오른쪽 면은 폼 부제목과 다른 내용(추천 기준과 예시 수치)을 보여 준다
     const panel = screen.getByRole('complementary')
     expect(within(panel).getByRole('heading', { level: 2 })).toHaveTextContent('오래된 응답은 1% 이하로')
-    expect(within(panel).getAllByRole('row')).toHaveLength(4)
+    // 예시 결과 중 캐시를 추천한 4개(74·68·96·99%, 0.3·0.6·0·0%)의 평균
+    expect(within(panel).getByText('84%')).toBeInTheDocument()
+    expect(within(panel).getByText('0.2%')).toBeInTheDocument()
   })
 
   it('이미 로그인했으면 로그인 화면 대신 프로젝트 목록으로 간다', async () => {

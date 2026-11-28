@@ -2,14 +2,16 @@ import { Link, Outlet } from 'react-router'
 import { HERO_RESULTS } from '../features/landing/content'
 import BrandMark from './BrandMark'
 
-// 오른쪽 면에 보여 줄 예시: 짧은 TTL, 긴 TTL, 캐시 비추천을 하나씩
-const PANEL_ENDPOINTS = ['GET /products/:id', 'GET /categories', 'GET /users/:id/cart']
-const PANEL_ROWS = HERO_RESULTS.filter((row) => PANEL_ENDPOINTS.includes(row.endpoint))
+// 소개 화면과 같은 예시 결과에서 숫자를 계산한다 (화면마다 숫자가 어긋나지 않게)
+const cached = HERO_RESULTS.filter((row) => row.verdict === 'cache')
+const average = (values: number[]) => values.reduce((sum, value) => sum + value, 0) / values.length
+const AVG_HIT = Math.round(average(cached.map((row) => parseFloat(row.hit))))
+const AVG_STALE = average(cached.map((row) => parseFloat(row.stale))).toFixed(1)
 
 /**
- * 로그인·회원가입 전용 화면: 왼쪽 로고와 폼, 오른쪽 먹색 면에 추천 기준과 결과 예시.
- * 서비스 소개 문장은 폼 위 부제목에 있으니, 오른쪽에는 부제목에 없는 내용(무엇을 기준으로 고르는지, 결과가 어떻게 나오는지)만 둔다.
- * 빨강은 로고와 추천 TTL에만 쓴다. 좁은 화면에서는 오른쪽 면을 숨긴다.
+ * 로그인·회원가입 전용 화면: 왼쪽 로고와 폼, 오른쪽 먹색 면에 추천 기준과 예시 수치.
+ * 서비스 소개 문장은 폼 위 부제목에 있으니, 오른쪽에는 부제목에 없는 내용(무엇을 기준으로 고르는지, 결과가 어느 정도인지)만 둔다.
+ * 빨강은 로고에만 쓴다. 좁은 화면에서는 오른쪽 면을 숨긴다.
  */
 export default function AuthLayout() {
   return (
@@ -32,35 +34,29 @@ export default function AuthLayout() {
             <br />
             오래된 응답은 1% 이하로
           </h2>
-          <table className="auth-panel__table">
-            <caption className="auth-panel__caption">예시 데이터</caption>
-            <thead>
-              <tr>
-                <th scope="col">엔드포인트</th>
-                <th scope="col">추천 TTL</th>
-                <th scope="col">히트율</th>
-                <th scope="col">오래된 응답</th>
-              </tr>
-            </thead>
-            <tbody>
-              {PANEL_ROWS.map((row) => (
-                <tr key={row.endpoint}>
-                  <th scope="row">
-                    <code>{row.endpoint}</code>
-                  </th>
-                  <td>
-                    {row.ttl ? (
-                      <strong className="auth-panel__ttl">{row.ttl}</strong>
-                    ) : (
-                      <span className="auth-panel__verdict">캐시 비추천</span>
-                    )}
-                  </td>
-                  <td>{row.hit}</td>
-                  <td>{row.stale}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <p className="auth-panel__text">
+            TTL 후보마다 로그를 다시 흘려 보고, 두 조건을 함께 맞추는 TTL을 엔드포인트마다 골라요.
+          </p>
+          <dl className="auth-panel__stats">
+            <div className="auth-panel__stat">
+              <dt>평균 예상 히트율</dt>
+              <dd>{AVG_HIT}%</dd>
+            </div>
+            <div className="auth-panel__stat">
+              <dt>평균 오래된 응답</dt>
+              <dd>{AVG_STALE}%</dd>
+            </div>
+            <div className="auth-panel__stat">
+              <dt>캐시를 추천한 엔드포인트</dt>
+              <dd>
+                {cached.length}
+                <span className="auth-panel__of">/{HERO_RESULTS.length}</span>
+              </dd>
+            </div>
+          </dl>
+          <p className="auth-panel__note">
+            예시 로그로 돌려 본 결과예요. 평균은 캐시를 추천한 엔드포인트 {cached.length}개 기준이에요.
+          </p>
         </div>
         <BrandMark className="auth-panel__mark" />
       </aside>
