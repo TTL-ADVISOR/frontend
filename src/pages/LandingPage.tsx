@@ -7,8 +7,7 @@ import { RECOMMENDED, SAMPLE } from '../features/landing/sample'
 
 /**
  * 로그인 전에 보는 서비스 소개 화면.
- * 행동 버튼은 늘 보이는 윗줄에만 둔다 (같은 버튼을 본문에 반복하지 않는다).
- * 색은 흰색 · 차콜 · 브랜드 빨강을 6 : 3 : 2 정도로 쓴다.
+ * 빨강은 로고와 추천 결과(추천 TTL, 추천 점)에만 쓴다. 경고는 앰버. docs/DESIGN.md 참고.
  */
 const SAMPLE_LINE =
   '{"ts":"2026-11-23T10:00:00.123Z","method":"GET","path":"/products/123?lang=ko","status":200,"latencyMs":42}'
@@ -24,21 +23,16 @@ export default function LandingPage() {
           <BrandMark className="brand__mark" />
           <span className="brand__name">TTL Advisor</span>
         </Link>
-        {/* 로그인 상태를 확인하는 동안은 비워 둔다 (잘못된 버튼이 잠깐 보이지 않게) */}
+        {/* 로그인 상태를 확인하는 동안은 비워 둔다. 시작하기는 첫 화면에만 둔다 (같은 버튼을 반복하지 않는다) */}
         <nav className="landing__actions" aria-label="계정">
           {me.isPending ? null : me.data ? (
             <Link to="/projects" className="button button--primary">
               내 프로젝트로
             </Link>
           ) : (
-            <>
-              <Link to="/login" className="landing__login">
-                로그인
-              </Link>
-              <Link to="/signup" className="button button--primary">
-                시작하기
-              </Link>
-            </>
+            <Link to="/login" className="landing__login">
+              로그인
+            </Link>
           )}
         </nav>
       </header>
@@ -53,6 +47,17 @@ export default function LandingPage() {
           <p className="landing__lead">
             API 액세스 로그를 올리면 엔드포인트마다 알맞은 Redis TTL과 그 근거를 알려 드려요.
           </p>
+          <div className="landing__cta">
+            {!me.isPending && !me.data && (
+              <Link to="/signup" className="button button--primary landing__button">
+                시작하기
+              </Link>
+            )}
+            <a href="#how-title" className="button landing__button">
+              추천 방식 보기
+            </a>
+          </div>
+          <p className="landing__note">JSON Lines 로그 · 파일 하나에 100MB까지</p>
         </section>
 
         <section className="proof" aria-label="분석 결과 예시">
@@ -137,7 +142,7 @@ export default function LandingPage() {
                   <tr>
                     <td>10:00:31</td>
                     <td>PUT /products/123</td>
-                    <td className="how__clear">비움</td>
+                    <td className="how__event">비움</td>
                   </tr>
                   <tr>
                     <td>10:00:45</td>
@@ -162,15 +167,6 @@ export default function LandingPage() {
               </dl>
             </li>
           </ol>
-        </section>
-
-        <section className="closing" aria-labelledby="closing-title">
-          <h2 id="closing-title" className="closing__title">
-            필요한 건
-            <br />
-            로그 파일 하나
-          </h2>
-          <p className="closing__note">JSON Lines · 파일 하나에 100MB까지</p>
         </section>
       </main>
 

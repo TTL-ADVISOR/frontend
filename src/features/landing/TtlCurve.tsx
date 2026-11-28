@@ -31,9 +31,14 @@ export default function TtlCurve() {
       role="img"
       aria-label={`TTL별 히트율 예시. 1초 ${SAMPLE[0].hit}%에서 1시간 ${SAMPLE.at(-1)!.hit}%까지 오른다. 5분부터는 오래된 응답이 1%를 넘어 제외되고, 추천 TTL은 ${rec.label}(히트율 ${rec.hit}%)이다.`}
     >
-      {/* 오래된 응답 1% 초과로 제외되는 구간 */}
-      <rect className="ttl-curve__excluded" x={staleX} y={TOP} width={W - RIGHT - staleX} height={plotH} />
-      <text className="ttl-curve__note" x={W - RIGHT - 6} y={TOP + 14} textAnchor="end">
+      {/* 오래된 응답 1% 초과로 제외되는 구간: 회색 빗금 + 앰버 글씨 (빨강은 추천에만 쓴다) */}
+      <defs>
+        <pattern id="ttl-curve-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line className="ttl-curve__hatch" x1="0" y1="0" x2="0" y2="6" />
+        </pattern>
+      </defs>
+      <rect className="ttl-curve__excluded" fill="url(#ttl-curve-hatch)" x={staleX} y={TOP} width={W - RIGHT - staleX} height={plotH} />
+      <text className="ttl-curve__note ttl-curve__note--warn" x={W - RIGHT - 6} y={TOP + 14} textAnchor="end">
         오래된 응답 1% 초과
       </text>
 

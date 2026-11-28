@@ -6,19 +6,20 @@ import { renderRoute } from '../test/render'
 import { loggedOut, server } from '../test/server'
 
 describe('소개 화면', () => {
-  it('로그인하지 않았으면 시작하기·로그인 버튼을 보여 주고, 시작하기는 회원가입으로 간다', async () => {
+  it('로그인하지 않았으면 윗줄에 로그인, 첫 화면에 시작하기를 한 번씩 보여 주고, 시작하기는 회원가입으로 간다', async () => {
     server.use(loggedOut)
     const { router } = renderRoute('/')
 
     const header = await screen.findByRole('navigation', { name: '계정' })
     expect(await within(header).findByRole('link', { name: '로그인' })).toHaveAttribute('href', '/login')
     expect(screen.queryByRole('link', { name: /내 프로젝트로/ })).not.toBeInTheDocument()
-    // 같은 버튼을 본문에 반복하지 않는다
+    expect(within(header).queryByRole('link', { name: '시작하기' })).not.toBeInTheDocument()
+    // 같은 버튼을 반복하지 않는다
     expect(screen.getAllByRole('link', { name: /시작하기|로그인/ })).toHaveLength(2)
     // 사이드바 없이 단독 화면으로 보여 준다
     expect(screen.queryByRole('complementary', { name: '사이드바' })).not.toBeInTheDocument()
 
-    await userEvent.click(within(header).getByRole('link', { name: '시작하기' }))
+    await userEvent.click(screen.getByRole('link', { name: '시작하기' }))
     expect(await screen.findByRole('heading', { name: '회원가입' })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/signup')
   })
@@ -37,9 +38,12 @@ describe('소개 화면', () => {
     const { router } = renderRoute('/')
 
     const header = await screen.findByRole('navigation', { name: '계정' })
-    await userEvent.click(await within(header).findByRole('link', { name: '내 프로젝트로' }))
+    const toProjects = await within(header).findByRole('link', { name: '내 프로젝트로' })
+    // 이미 가입했으니 시작하기·로그인은 보이지 않는다
+    expect(screen.queryByRole('link', { name: /시작하기|로그인/ })).not.toBeInTheDocument()
+
+    await userEvent.click(toProjects)
     expect(await screen.findByRole('heading', { name: '프로젝트' })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/projects')
-    expect(screen.queryByRole('link', { name: '시작하기' })).not.toBeInTheDocument()
   })
 })
