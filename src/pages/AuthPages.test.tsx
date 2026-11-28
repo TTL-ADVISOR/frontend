@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { describe, expect, it } from 'vitest'
@@ -87,6 +87,26 @@ describe('로그인', () => {
     expect(screen.getByLabelText('이메일')).toHaveAccessibleDescription('이메일을 입력해 주세요.')
     expect(screen.getByLabelText('비밀번호')).toHaveAccessibleDescription('비밀번호를 입력해 주세요.')
     expect(posts).toBe(0)
+  })
+
+  it('비밀번호 보기 버튼으로 입력한 비밀번호를 보고 다시 숨긴다', async () => {
+    server.use(loggedOut)
+    renderRoute('/login')
+
+    const password = await screen.findByLabelText('비밀번호')
+    const reveal = screen.getByRole('button', { name: '비밀번호 보기' })
+    expect(password).toHaveAttribute('type', 'password')
+    await userEvent.click(reveal)
+    expect(password).toHaveAttribute('type', 'text')
+    expect(reveal).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(reveal)
+    expect(password).toHaveAttribute('type', 'password')
+    // 오른쪽 면은 폼 부제목과 다른 내용(추천 기준과 예시 수치)을 보여 준다
+    const panel = screen.getByRole('complementary')
+    expect(within(panel).getByRole('heading', { level: 2 })).toHaveTextContent('오래된 응답은 1% 이하로')
+    // 예시 결과 중 캐시를 추천한 4개(74·68·96·99%, 0.3·0.6·0·0%)의 평균
+    expect(within(panel).getByText('84%')).toBeInTheDocument()
+    expect(within(panel).getByText('0.2%')).toBeInTheDocument()
   })
 
   it('이미 로그인했으면 로그인 화면 대신 프로젝트 목록으로 간다', async () => {

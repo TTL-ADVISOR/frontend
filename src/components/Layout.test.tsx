@@ -32,11 +32,13 @@ describe('사이드바', () => {
 
     const nav = await screen.findByRole('navigation', { name: '주 메뉴' })
     expect(await within(nav).findByText('주문 API')).toBeInTheDocument()
-    expect(within(nav).getByRole('link', { name: '로그 업로드' })).toHaveAttribute('aria-current', 'page')
+    expect(within(nav).getByRole('link', { name: '개요' })).toHaveAttribute('aria-current', 'page')
+    expect(within(nav).getByRole('link', { name: '로그' })).toHaveAttribute('href', '/projects/3/logs')
+    expect(within(nav).getByRole('link', { name: '설정' })).toHaveAttribute('href', '/projects/3/settings')
     expect(within(nav).getByRole('link', { name: '프로젝트' })).not.toHaveAttribute('aria-current')
     // 아직 없는 메뉴는 링크가 아니다
-    expect(within(nav).queryByRole('link', { name: /엔드포인트 정책/ })).not.toBeInTheDocument()
-    expect(within(nav).getByText('엔드포인트 정책').closest('[aria-disabled]')).toHaveAttribute('aria-disabled', 'true')
+    expect(within(nav).queryByRole('link', { name: /정책/ })).not.toBeInTheDocument()
+    expect(within(nav).getByText('정책').closest('[aria-disabled]')).toHaveAttribute('aria-disabled', 'true')
   })
 
   it('고정 버튼을 끄면 아이콘 줄만 남고, 다음에 열어도 그 상태를 기억한다', async () => {

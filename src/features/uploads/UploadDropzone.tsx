@@ -1,7 +1,9 @@
 import { useId, useRef, useState, type DragEvent } from 'react'
 import { ApiError } from '../../api/client'
 import type { UploadAccepted } from '../../api/uploads'
+import { readPreview, type LogPreview } from './preview'
 import { useUploadLog } from './queries'
+import UploadPreview from './UploadPreview'
 import { validateLogFile } from './validation'
 
 interface Props {
@@ -9,7 +11,10 @@ interface Props {
   onAccepted: (upload: UploadAccepted) => void
 }
 
-/** 로그 파일을 끌어다 놓거나 골라서 올린다. 전송 중에는 몇 %를 보냈는지 보여 준다. */
+/**
+ * 로그 파일을 끌어다 놓거나 고른 뒤, 앞부분 미리보기와 필드 확인을 보고 올린다.
+ * 전송 중에는 몇 %를 보냈는지 보여 준다.
+ */
 export default function UploadDropzone({ projectId, onAccepted }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const hintId = useId()
@@ -18,16 +23,33 @@ export default function UploadDropzone({ projectId, onAccepted }: Props) {
   const [clientError, setClientError] = useState<string | null>(null)
   const [progress, setProgress] = useState(0)
   const [sending, setSending] = useState<string | null>(null)
+  const [picked, setPicked] = useState<{ file: File; preview: LogPreview | null } | null>(null)
   const mutation = useUploadLog(projectId)
 
   const error = clientError ?? (mutation.error ? uploadErrorMessage(mutation.error) : null)
 
-  function start(file: File | undefined) {
+  function pick(file: File | undefined) {
     if (!file || mutation.isPending) return
     const invalid = validateLogFile(file)
     setClientError(invalid)
     mutation.reset()
-    if (invalid) return
+    if (invalid) {
+      setPicked(null)
+      return
+    }
+    setPicked({ file, preview: null })
+    readPreview(file)
+      .catch((): LogPreview => ({
+        lines: [],
+        required: { ts: null, method: null, path: null, status: null },
+        optional: { latencyMs: false, size: false, respHash: false },
+      }))
+      // 읽는 사이 다른 파일을 골랐으면 버린다
+      .then((preview) => setPicked((current) => (current?.file === file ? { file, preview } : current)))
+  }
+
+  function upload(file: File) {
+    setPicked(null)
     setProgress(0)
     setSending(file.name)
     mutation.mutate(
@@ -42,10 +64,21 @@ export default function UploadDropzone({ projectId, onAccepted }: Props) {
   function handleDrop(event: DragEvent<HTMLDivElement>) {
     event.preventDefault()
     setDragging(false)
-    start(event.dataTransfer.files[0])
+    pick(event.dataTransfer.files[0])
   }
 
   const percent = Math.round(progress * 100)
+
+  if (picked && !sending) {
+    return (
+      <UploadPreview
+        file={picked.file}
+        preview={picked.preview}
+        onUpload={() => upload(picked.file)}
+        onCancel={() => setPicked(null)}
+      />
+    )
+  }
 
   return (
     <div className="stack upload">
@@ -89,7 +122,7 @@ export default function UploadDropzone({ projectId, onAccepted }: Props) {
           hidden
           data-testid="upload-input"
           onChange={(event) => {
-            start(event.target.files?.[0])
+            pick(event.target.files?.[0])
             // 같은 파일을 다시 골라도 change가 나도록 비운다
             event.target.value = ''
           }}

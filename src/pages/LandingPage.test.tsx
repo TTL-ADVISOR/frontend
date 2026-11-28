@@ -29,8 +29,46 @@ describe('소개 화면', () => {
     renderRoute('/')
 
     expect(await screen.findByRole('img', { name: /추천 TTL은 1분/ })).toBeInTheDocument()
+    // 첫 화면 오른쪽의 결과 예시 표
+    const results = screen.getByRole('table', { name: /결과 예시/ })
+    expect(within(results).getByRole('rowheader', { name: 'GET /products/:id' }).closest('tr')).toHaveTextContent('1분')
+    expect(results).toHaveTextContent('캐시 비추천')
     const steps = within(screen.getByRole('region', { name: '이렇게 동작해요' })).getAllByRole('heading', { level: 3 })
     expect(steps.map((h) => h.textContent)).toEqual(['로그 올리기', '엔드포인트로 묶기', 'TTL마다 재생하기', '추천 받기'])
+  })
+
+  it('로그 형식, 설정 예시, 자주 묻는 질문을 보여 주고 탭으로 바꿔 본다', async () => {
+    server.use(loggedOut)
+    renderRoute('/')
+
+    const format = await screen.findByRole('region', { name: '로그 형식' })
+    expect(within(format).getAllByRole('row').map((row) => row.querySelector('th')?.textContent).slice(1)).toEqual([
+      'ts',
+      'method',
+      'path',
+      'status',
+      'latencyMs',
+      'size',
+      'respHash',
+    ])
+
+    const config = screen.getByRole('region', { name: '추천을 설정으로' })
+    // 주 사용자가 Spring 개발자라 Spring 탭이 먼저다
+    expect(within(config).getByRole('tab', { name: 'Spring Cache' })).toHaveAttribute('aria-selected', 'true')
+    expect(within(config).getByRole('tabpanel')).toHaveTextContent('entryTtl(Duration.ofSeconds(60))')
+    await userEvent.click(within(config).getByRole('tab', { name: 'HTTP 헤더' }))
+    expect(within(config).getByRole('tabpanel')).toHaveTextContent('Cache-Control: public, max-age=60')
+    // 화살표로도 옮긴다
+    await userEvent.keyboard('{ArrowLeft}')
+    expect(within(config).getByRole('tab', { name: 'Redis' })).toHaveFocus()
+    expect(within(config).getByRole('tabpanel')).toHaveTextContent('EX 60')
+
+    const faq = screen.getByRole('region', { name: '자주 묻는 질문' })
+    expect(within(faq).getByText('respHash가 없으면 어떻게 되나요?')).toBeInTheDocument()
+    expect(within(screen.getByRole('navigation', { name: '바닥글' })).getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+      'href',
+      'https://github.com/TTL-ADVISOR',
+    )
   })
 
   it('로그인했으면 내 프로젝트로 가는 버튼을 보여 준다', async () => {

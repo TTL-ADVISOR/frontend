@@ -30,7 +30,7 @@ export default function CreateProjectForm({ onCreated }: Props) {
   }
 
   return (
-    <form className="card create-form" onSubmit={handleSubmit} noValidate>
+    <form className="create-form" onSubmit={handleSubmit} noValidate>
       <label htmlFor="project-name" className="create-form__label">
         새 프로젝트
       </label>

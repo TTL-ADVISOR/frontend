@@ -1,15 +1,30 @@
-import type { UploadDetail } from '../../api/uploads'
+import { useEffect, useRef } from 'react'
+import { isInProgress, type UploadDetail } from '../../api/uploads'
+import Icon from '../../components/Icon'
 import { ErrorMessage, Loading } from '../../components/QueryState'
 import { formatDateTime } from '../../lib/format'
+import { useToast } from '../toast/context'
 import { useUpload } from './queries'
 import { StatusBadge } from './StatusBadge'
 
 const numberFormat = new Intl.NumberFormat('ko-KR')
 const n = (value: number) => numberFormat.format(value)
 
-/** 업로드 한 건의 처리 상태. 처리 중이면 1초마다 다시 불러온다. */
-export default function UploadDetailCard({ uploadId }: { uploadId: number }) {
+/** 업로드 한 건의 처리 상태. 처리 중이면 1초마다 다시 불러온다. announce면 끝났을 때 알림을 띄운다. */
+export default function UploadDetailCard({ uploadId, announce = false }: { uploadId: number; announce?: boolean }) {
   const upload = useUpload(uploadId)
+  const toast = useToast()
+  const announced = useRef(false)
+  const status = upload.data?.status
+  const filename = upload.data?.filename
+
+  // 방금 올린 업로드는 처리가 끝나면 한 번 알린다. 이력에서 고른 업로드는 알리지 않는다
+  useEffect(() => {
+    if (!announce || announced.current || !status || isInProgress(status)) return
+    announced.current = true
+    if (status === 'PARSED') toast.show(`${filename} 처리를 마쳤어요.`, 'success')
+    else toast.show(`${filename}을(를) 처리하지 못했어요.`, 'warning')
+  }, [announce, status, filename, toast])
 
   // 폴링 중 한 번 실패해도 마지막으로 받은 상태는 계속 보여 준다 (다음 주기에 다시 불러온다)
   if (upload.data === undefined) {
@@ -72,7 +87,8 @@ function Body({ upload }: { upload: UploadDetail }) {
       return (
         <div className="stack">
           <p className="upload-detail__failure" role="alert">
-            {upload.failureReason ?? '처리하지 못했습니다.'}
+            <Icon name="alert" />
+            <span>{upload.failureReason ?? '처리하지 못했습니다.'}</span>
           </p>
           <p className="muted">
             한 줄에 JSON 객체 하나씩, <code>ts</code>·<code>method</code>·<code>path</code>·<code>status</code>{' '}

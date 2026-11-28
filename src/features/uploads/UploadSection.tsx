@@ -10,6 +10,8 @@ export default function UploadSection({ projectId }: { projectId: number }) {
   const uploads = useUploads(projectId)
   // 고르지 않았으면 가장 최근 업로드를 보여 준다
   const [selectedId, setSelectedId] = useState<number>()
+  // 이 화면에서 방금 올린 업로드. 처리가 끝나면 알림을 띄운다
+  const [justUploadedId, setJustUploadedId] = useState<number>()
   const shownId = selectedId ?? uploads.data?.[0]?.id
 
   return (
@@ -17,9 +19,17 @@ export default function UploadSection({ projectId }: { projectId: number }) {
       <h2 id="upload-heading" className="section-title">
         로그 업로드
       </h2>
-      <UploadDropzone projectId={projectId} onAccepted={(accepted) => setSelectedId(accepted.id)} />
+      <UploadDropzone
+        projectId={projectId}
+        onAccepted={(accepted) => {
+          setSelectedId(accepted.id)
+          setJustUploadedId(accepted.id)
+        }}
+      />
 
-      {shownId !== undefined && <UploadDetailCard key={shownId} uploadId={shownId} />}
+      {shownId !== undefined && (
+        <UploadDetailCard key={shownId} uploadId={shownId} announce={shownId === justUploadedId} />
+      )}
 
       {uploads.isPending ? (
         <Loading label="업로드 이력을 불러오는 중…" />

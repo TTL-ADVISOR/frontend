@@ -13,3 +13,6 @@ export const SAMPLE = [
 ] as const
 
 export const RECOMMENDED = 4
+
+/** 추천 TTL(1분)을 초로 */
+export const RECOMMENDED_SECONDS = 60

@@ -30,14 +30,44 @@ describe('프로젝트 목록 화면', () => {
     renderRoute('/projects')
 
     // 로그인 확인이 끝난 뒤 목록을 불러오는 동안의 표시
-    expect(await screen.findByText('프로젝트를 불러오는 중…')).toHaveAttribute('role', 'status')
-    const list = await screen.findByRole('list', { name: '프로젝트 목록' })
-    const items = within(list).getAllByRole('listitem')
-    expect(items).toHaveLength(2)
-    expect(within(items[0]).getByRole('link', { name: '주문 API' })).toHaveAttribute('href', '/projects/2')
-    expect(items[0]).toHaveTextContent('3개')
-    expect(items[0]).toHaveTextContent('분석있음')
-    expect(items[1]).toHaveTextContent('분석없음')
+    expect((await screen.findByText('프로젝트를 불러오는 중…')).closest('[role="status"]')).toBeInTheDocument()
+    const table = await screen.findByRole('table', { name: '프로젝트 목록' })
+    // 머리글 줄을 뺀 프로젝트 줄. 기본은 최근 만든 순
+    const rows = within(table).getAllByRole('row').slice(1)
+    expect(rows).toHaveLength(2)
+    expect(within(rows[0]).getByRole('link', { name: '주문 API' })).toHaveAttribute('href', '/projects/2')
+    expect(rows[0]).toHaveTextContent('분석 있음')
+    expect(rows[0]).toHaveTextContent('3개')
+    expect(rows[1]).toHaveTextContent('로그 필요')
+  })
+
+  it('이름으로 찾고, 이름순으로 정렬한다', async () => {
+    server.use(
+      http.get('/api/projects', () =>
+        HttpResponse.json([
+          summary({ id: 3, name: '결제 API', createdAt: '2026-11-25T00:00:00.000Z', uploadCount: 1 }),
+          summary({ id: 2, name: '주문 API', createdAt: '2026-11-24T00:00:00.000Z' }),
+          summary({ id: 1, name: '가격 API', createdAt: '2026-11-23T00:00:00.000Z' }),
+        ]),
+      ),
+    )
+
+    renderRoute('/projects')
+    const table = await screen.findByRole('table', { name: '프로젝트 목록' })
+    const names = () => within(table).getAllByRole('link').map((link) => link.textContent)
+    expect(names()).toEqual(['결제 API', '주문 API', '가격 API'])
+    expect(within(table).getByRole('link', { name: '결제 API' }).closest('tr')).toHaveTextContent('분석 전')
+
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: '정렬' }), '이름순')
+    expect(names()).toEqual(['가격 API', '결제 API', '주문 API'])
+
+    await userEvent.type(screen.getByRole('searchbox', { name: '프로젝트 검색' }), '주문')
+    expect(names()).toEqual(['주문 API'])
+
+    await userEvent.clear(screen.getByRole('searchbox', { name: '프로젝트 검색' }))
+    await userEvent.type(screen.getByRole('searchbox', { name: '프로젝트 검색' }), '배송')
+    expect(screen.queryByRole('table', { name: '프로젝트 목록' })).not.toBeInTheDocument()
+    expect(screen.getByRole('status')).toHaveTextContent('‘배송’와 맞는 프로젝트가 없어요.')
   })
 
   it('프로젝트가 없으면 빈 상태를 안내한다', async () => {
