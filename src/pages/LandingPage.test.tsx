@@ -13,6 +13,8 @@ describe('소개 화면', () => {
     const header = await screen.findByRole('navigation', { name: '계정' })
     expect(await within(header).findByRole('link', { name: '로그인' })).toHaveAttribute('href', '/login')
     expect(screen.queryByRole('link', { name: /내 프로젝트로/ })).not.toBeInTheDocument()
+    // 같은 버튼을 본문에 반복하지 않는다
+    expect(screen.getAllByRole('link', { name: /시작하기|로그인/ })).toHaveLength(2)
     // 사이드바 없이 단독 화면으로 보여 준다
     expect(screen.queryByRole('complementary', { name: '사이드바' })).not.toBeInTheDocument()
 
@@ -27,7 +29,7 @@ describe('소개 화면', () => {
 
     expect(await screen.findByRole('img', { name: /추천 TTL은 1분/ })).toBeInTheDocument()
     const steps = within(screen.getByRole('region', { name: '이렇게 동작해요' })).getAllByRole('heading', { level: 3 })
-    expect(steps.map((h) => h.textContent)).toEqual(['로그 올리기', '엔드포인트로 묶기', 'TTL마다 재생하기', '추천과 근거 받기'])
+    expect(steps.map((h) => h.textContent)).toEqual(['로그 올리기', '엔드포인트로 묶기', 'TTL마다 재생하기', '추천 받기'])
   })
 
   it('로그인했으면 내 프로젝트로 가는 버튼을 보여 준다', async () => {

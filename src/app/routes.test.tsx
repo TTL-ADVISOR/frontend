@@ -12,7 +12,7 @@ describe('routes', () => {
   it('루트는 서비스 소개 화면이다', async () => {
     const { router } = renderRoute('/')
 
-    expect(await screen.findByRole('heading', { level: 1, name: /로그로 정하세요/ })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: /로그가 정합니다/ })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/')
   })
 
