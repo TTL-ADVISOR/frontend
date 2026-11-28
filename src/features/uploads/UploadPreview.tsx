@@ -47,14 +47,17 @@ export default function UploadPreview({ file, preview, onUpload, onCancel }: Pro
             {REQUIRED_FIELDS.map((field) => {
               const problem = preview.required[field]
               return (
-                <li key={field} className={problem ? 'field-check field-check--bad' : 'field-check'}>
+                <li key={field} className={problem ? 'field-check field-check--bad' : 'field-check field-check--ok'}>
                   <code>{field}</code>
                   <span>{problem ? `${problem.line}번째 줄: ${problem.reason}` : '있음'}</span>
                 </li>
               )
             })}
             {OPTIONAL_FIELDS.map((field) => (
-              <li key={field} className={preview.optional[field] ? 'field-check' : 'field-check field-check--missing'}>
+              <li
+                key={field}
+                className={preview.optional[field] ? 'field-check field-check--ok' : 'field-check field-check--missing'}
+              >
                 <code>{field}</code>
                 <span>{preview.optional[field] ? '있음' : '없음 (선택)'}</span>
               </li>

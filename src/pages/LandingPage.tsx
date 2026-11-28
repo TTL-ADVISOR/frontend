@@ -173,7 +173,7 @@ export default function LandingPage() {
           </ol>
         </section>
 
-        <section className="doc" aria-labelledby="format-title">
+        <section className="doc doc--tint" aria-labelledby="format-title">
           <div className="doc__head">
             <h2 id="format-title" className="doc__title">
               로그 형식
@@ -196,7 +196,9 @@ export default function LandingPage() {
                     <th scope="row">
                       <code>{field.name}</code>
                     </th>
-                    <td>{field.required ? '필수' : '선택'}</td>
+                    <td className={field.required ? 'fields__required' : undefined}>
+                      {field.required ? '필수' : '선택'}
+                    </td>
                     <td>{field.use}</td>
                   </tr>
                 ))}
@@ -257,7 +259,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="doc" aria-labelledby="faq-title">
+        <section className="doc doc--tint" aria-labelledby="faq-title">
           <div className="doc__head">
             <h2 id="faq-title" className="doc__title">
               자주 묻는 질문

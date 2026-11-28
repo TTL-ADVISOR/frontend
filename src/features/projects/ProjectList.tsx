@@ -8,9 +8,9 @@ type Sort = 'recent' | 'name'
 const collator = new Intl.Collator('ko-KR', { numeric: true })
 
 /** 지금 할 일 기준의 상태. 분석 결과(엔드포인트 수, 히트율)는 분석 API가 생기면 열을 더한다 */
-function statusOf(project: ProjectSummary): { label: string; tone: 'todo' | 'done' } {
-  if (project.uploadCount === 0) return { label: '로그 필요', tone: 'todo' }
-  if (project.latestAnalysisId === null) return { label: '분석 전', tone: 'todo' }
+function statusOf(project: ProjectSummary): { label: string; tone: 'need' | 'ready' | 'done' } {
+  if (project.uploadCount === 0) return { label: '로그 필요', tone: 'need' }
+  if (project.latestAnalysisId === null) return { label: '분석 전', tone: 'ready' }
   return { label: '분석 있음', tone: 'done' }
 }
 
