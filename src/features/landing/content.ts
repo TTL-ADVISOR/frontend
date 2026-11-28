@@ -90,11 +90,14 @@ export const FAQ = [
   },
 ] as const
 
-/** 첫 화면 오른쪽의 결과 예시. 판정 세 종류가 모두 보이게 골랐다 */
+/** 첫 화면 결과 예시의 엔드포인트 표. 판정 세 종류가 모두 보이게 골랐다 */
 export const HERO_RESULTS = [
   { endpoint: 'GET /products/:id', verdict: 'cache', ttl: '1분', hit: '74%', stale: '0.3%' },
+  { endpoint: 'GET /products', verdict: 'cache', ttl: '30초', hit: '68%', stale: '0.6%' },
   { endpoint: 'GET /categories', verdict: 'cache', ttl: '10분', hit: '96%', stale: '0%' },
+  { endpoint: 'GET /banners', verdict: 'cache', ttl: '1시간', hit: '99%', stale: '0%' },
   { endpoint: 'GET /users/:id/cart', verdict: 'dont', ttl: null, hit: '6%', stale: '-' },
+  { endpoint: 'GET /orders/:id', verdict: 'dont', ttl: null, hit: '3%', stale: '-' },
   { endpoint: 'GET /search', verdict: 'insufficient', ttl: null, hit: '-', stale: '-' },
 ] as const
 

@@ -10,9 +10,9 @@ export default function ProjectsPage() {
   const projects = useProjects()
 
   return (
-    <section className="stack">
-      <header>
-        <h1>프로젝트</h1>
+    <section className="stack page">
+      <header className="page-head">
+        <h1 className="page-head__title">프로젝트</h1>
         <p className="muted">분석할 서비스를 프로젝트로 만들고 접근 로그를 올려 보세요.</p>
       </header>
 

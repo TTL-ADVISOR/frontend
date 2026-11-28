@@ -101,8 +101,8 @@ describe('로그인', () => {
     expect(reveal).toHaveAttribute('aria-pressed', 'true')
     await userEvent.click(reveal)
     expect(password).toHaveAttribute('type', 'password')
-    // 오른쪽에는 장식 그림 대신 결과 예시를 보여 준다
-    expect(screen.getByRole('complementary', { name: '분석 결과 예시' })).toHaveTextContent('추천 TTL')
+    // 오른쪽 빨강 면은 로고만 있는 장식이라 화면 읽기 프로그램에 드러나지 않는다
+    expect(screen.queryByRole('complementary')).not.toBeInTheDocument()
   })
 
   it('이미 로그인했으면 로그인 화면 대신 프로젝트 목록으로 간다', async () => {

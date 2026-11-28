@@ -1,14 +1,12 @@
 import { Link, Outlet } from 'react-router'
-import TtlCurve from '../features/landing/TtlCurve'
-import { RECOMMENDED, SAMPLE } from '../features/landing/sample'
 import BrandMark from './BrandMark'
 
 /**
- * 로그인·회원가입 전용 화면: 왼쪽 로고와 폼, 오른쪽 어두운 패널에 결과 예시.
- * 장식 그림 대신 서비스가 실제로 주는 결과를 보여 준다. 좁은 화면에서는 패널을 숨긴다.
+ * 로그인·회원가입 전용 화면: 왼쪽 로고와 폼, 오른쪽 브랜드 빨강 면.
+ * 오른쪽은 큰 로고만 두는 장식이라 화면 읽기 프로그램에서는 숨긴다.
+ * 소개 문장은 폼 위 부제목에만 둔다 (같은 말을 두 번 하지 않는다). 좁은 화면에서는 빨강 면을 숨긴다.
  */
 export default function AuthLayout() {
-  const rec = SAMPLE[RECOMMENDED]
   return (
     <div className="auth-shell">
       <div className="auth-shell__side">
@@ -22,27 +20,9 @@ export default function AuthLayout() {
           <Outlet />
         </main>
       </div>
-      <aside className="auth-panel" aria-label="분석 결과 예시">
-        <p className="auth-panel__label">
-          예시 데이터 · <code>GET /products/:id</code>
-        </p>
-        <dl className="auth-panel__facts">
-          <div className="auth-panel__pick">
-            <dt>추천 TTL</dt>
-            <dd>{rec.label}</dd>
-          </div>
-          <div>
-            <dt>히트율</dt>
-            <dd>{rec.hit}%</dd>
-          </div>
-          <div>
-            <dt>오래된 응답</dt>
-            <dd>{rec.stale}%</dd>
-          </div>
-        </dl>
-        <TtlCurve />
-        <p className="auth-panel__note">오래된 응답이 1% 이하인 TTL 중 히트율이 충분히 오른 가장 짧은 값을 골라요.</p>
-      </aside>
+      <div className="auth-panel" aria-hidden="true">
+        <BrandMark className="auth-panel__mark" />
+      </div>
     </div>
   )
 }

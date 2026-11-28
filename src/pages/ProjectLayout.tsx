@@ -34,21 +34,21 @@ export default function ProjectLayout() {
   }
 
   return (
-    <section className="stack workspace">
-      <nav aria-label="현재 위치" className="breadcrumb">
-        <ol>
-          <li>
-            <Link to="/projects">프로젝트</Link>
-          </li>
-          <li aria-current={crumb ? undefined : 'page'}>
-            {crumb ? <Link to={`/projects/${projectId}`}>{project.data.name}</Link> : project.data.name}
-          </li>
-          {crumb && <li aria-current="page">{crumb}</li>}
-        </ol>
-      </nav>
-      <header className="workspace__header">
-        <h1 className="workspace__title">{project.data.name}</h1>
-        <p className="muted workspace__meta">
+    <section className="stack page workspace">
+      <header className="page-head">
+        <nav aria-label="현재 위치" className="breadcrumb">
+          <ol>
+            <li>
+              <Link to="/projects">프로젝트</Link>
+            </li>
+            <li aria-current={crumb ? undefined : 'page'}>
+              {crumb ? <Link to={`/projects/${projectId}`}>{project.data.name}</Link> : project.data.name}
+            </li>
+            {crumb && <li aria-current="page">{crumb}</li>}
+          </ol>
+        </nav>
+        <h1 className="page-head__title">{project.data.name}</h1>
+        <p className="muted page-head__meta">
           <time dateTime={project.data.createdAt}>{formatDateTime(project.data.createdAt)}</time>에 만듦 · 업로드{' '}
           {project.data.uploadCount}개
         </p>
