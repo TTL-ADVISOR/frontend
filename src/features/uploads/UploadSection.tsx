@@ -26,7 +26,7 @@ export default function UploadSection({ projectId }: { projectId: number }) {
       ) : uploads.isError ? (
         <ErrorMessage error={uploads.error} onRetry={() => uploads.refetch()} />
       ) : uploads.data.length === 0 ? (
-        <div className="card empty">
+        <div className="empty">
           <p className="empty__title">아직 올린 로그가 없습니다</p>
           <p className="muted">API 액세스 로그를 올리면 엔드포인트별로 분석할 수 있어요.</p>
         </div>
