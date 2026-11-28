@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -39,16 +39,41 @@ describe('사이드바', () => {
     expect(within(nav).getByText('엔드포인트 정책').closest('[aria-disabled]')).toHaveAttribute('aria-disabled', 'true')
   })
 
-  it('사이드바를 접으면 다음에 열어도 접힌 상태를 기억한다', async () => {
+  it('고정 버튼을 끄면 아이콘 줄만 남고, 다음에 열어도 그 상태를 기억한다', async () => {
     server.use(http.get('/api/projects', () => HttpResponse.json([])))
 
     const first = renderRoute('/projects')
-    await userEvent.click(await screen.findByRole('button', { name: '사이드바 접기' }))
-    expect(screen.getByRole('button', { name: '사이드바 펼치기' })).toBeInTheDocument()
+    const pin = await screen.findByRole('button', { name: '사이드바 고정' })
+    // 처음에는 고정된 상태
+    expect(pin).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(pin)
+    expect(pin).toHaveAttribute('aria-pressed', 'false')
+    expect(document.querySelector('.shell')).toHaveClass('shell--rail')
     first.unmount()
 
     renderRoute('/projects')
-    expect(await screen.findByRole('button', { name: '사이드바 펼치기' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: '사이드바 고정' })).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('고정을 끈 상태에서 마우스를 올리면 잠깐 펼치고, 벗어나면 다시 접는다', async () => {
+    localStorage.setItem('ttl.sidebar.pinned', '0')
+    server.use(http.get('/api/projects', () => HttpResponse.json([])))
+
+    renderRoute('/projects')
+    const sidebar = await screen.findByRole('complementary', { name: '사이드바' })
+    const shell = document.querySelector('.shell')!
+
+    await userEvent.hover(sidebar)
+    await waitFor(() => expect(shell).toHaveClass('shell--peek'))
+    await userEvent.unhover(sidebar)
+    expect(shell).not.toHaveClass('shell--peek')
+
+    // 펼쳐 본 상태에서 고정하면 그대로 고정된다
+    await userEvent.hover(sidebar)
+    await waitFor(() => expect(shell).toHaveClass('shell--peek'))
+    await userEvent.click(screen.getByRole('button', { name: '사이드바 고정' }))
+    expect(shell).toHaveClass('shell--pinned')
+    expect(shell).not.toHaveClass('shell--peek')
   })
 
   it('좁은 화면용 메뉴 버튼으로 서랍을 열고, 닫기·Esc·메뉴 이동으로 닫는다', async () => {
