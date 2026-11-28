@@ -19,7 +19,7 @@ describe('routes', () => {
   it('공통 레이아웃에 홈 링크가 있다', async () => {
     renderRoute('/projects')
 
-    expect(await screen.findByRole('link', { name: 'TTL Advisor' })).toHaveAttribute('href', '/projects')
+    expect((await screen.findAllByRole('link', { name: 'TTL Advisor' }))[0]).toHaveAttribute('href', '/projects')
   })
 
   it('없는 경로는 404 화면을 보여 준다', async () => {
