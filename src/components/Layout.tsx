@@ -162,9 +162,11 @@ function ProjectNav({ projectId }: { projectId: number }) {
       <p className="sidebar__group-title" title={project.data.name}>
         {project.data.name}
       </p>
-      <NavItem to={`/projects/${projectId}`} icon="upload" label="로그 업로드" end />
-      <SoonItem icon="policy" label="엔드포인트 정책" />
-      <SoonItem icon="analysis" label="분석 결과" />
+      <NavItem to={`/projects/${projectId}`} icon="overview" label="개요" end />
+      <NavItem to={`/projects/${projectId}/logs`} icon="logs" label="로그" />
+      <SoonItem icon="policy" label="정책" />
+      <SoonItem icon="analysis" label="분석" />
+      <NavItem to={`/projects/${projectId}/settings`} icon="settings" label="설정" />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { isInProgress, type UploadDetail } from '../../api/uploads'
+import Icon from '../../components/Icon'
 import { ErrorMessage, Loading } from '../../components/QueryState'
 import { formatDateTime } from '../../lib/format'
 import { useToast } from '../toast/context'
@@ -86,7 +87,8 @@ function Body({ upload }: { upload: UploadDetail }) {
       return (
         <div className="stack">
           <p className="upload-detail__failure" role="alert">
-            {upload.failureReason ?? '처리하지 못했습니다.'}
+            <Icon name="alert" />
+            <span>{upload.failureReason ?? '처리하지 못했습니다.'}</span>
           </p>
           <p className="muted">
             한 줄에 JSON 객체 하나씩, <code>ts</code>·<code>method</code>·<code>path</code>·<code>status</code>{' '}

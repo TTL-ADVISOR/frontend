@@ -1,4 +1,5 @@
 import type { UploadStatus } from '../../api/uploads'
+import Icon from '../../components/Icon'
 
 const LABELS: Record<UploadStatus, string> = {
   UPLOADED: '대기 중',
@@ -8,5 +9,11 @@ const LABELS: Record<UploadStatus, string> = {
 }
 
 export function StatusBadge({ status }: { status: UploadStatus }) {
-  return <span className={`badge badge--${status.toLowerCase()}`}>{LABELS[status]}</span>
+  // 실패는 빨강 계열이라 브랜드 빨강과 헷갈리지 않게 아이콘을 함께 붙인다
+  return (
+    <span className={`badge badge--${status.toLowerCase()}`}>
+      {status === 'FAILED' && <Icon name="alert" />}
+      {LABELS[status]}
+    </span>
+  )
 }

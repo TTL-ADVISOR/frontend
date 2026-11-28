@@ -89,6 +89,22 @@ describe('로그인', () => {
     expect(posts).toBe(0)
   })
 
+  it('비밀번호 보기 버튼으로 입력한 비밀번호를 보고 다시 숨긴다', async () => {
+    server.use(loggedOut)
+    renderRoute('/login')
+
+    const password = await screen.findByLabelText('비밀번호')
+    const reveal = screen.getByRole('button', { name: '비밀번호 보기' })
+    expect(password).toHaveAttribute('type', 'password')
+    await userEvent.click(reveal)
+    expect(password).toHaveAttribute('type', 'text')
+    expect(reveal).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(reveal)
+    expect(password).toHaveAttribute('type', 'password')
+    // 오른쪽에는 장식 그림 대신 결과 예시를 보여 준다
+    expect(screen.getByRole('complementary', { name: '분석 결과 예시' })).toHaveTextContent('추천 TTL')
+  })
+
   it('이미 로그인했으면 로그인 화면 대신 프로젝트 목록으로 간다', async () => {
     server.use(http.get('/api/projects', () => HttpResponse.json([])))
     const { router } = renderRoute('/login')

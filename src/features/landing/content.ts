@@ -10,7 +10,7 @@ export const LOG_FIELDS = [
   { name: 'status', required: true, use: '응답 코드. GET 2xx만 캐시 대상으로 봐요' },
   { name: 'latencyMs', required: false, use: '응답 시간(ms, 정수). 아낄 수 있는 백엔드 시간을 계산해요' },
   { name: 'size', required: false, use: '응답 크기(바이트). 캐시 메모리를 추정해요' },
-  { name: 'respHash', required: false, use: '응답 바디 해시(64자 이하). 오래된 응답을 정확히 세요' },
+  { name: 'respHash', required: false, use: '응답 바디 해시(64자 이하). 오래된 응답을 더 정확하게 세어요' },
 ] as const
 
 export const NGINX_LOG = `# nginx.conf의 http 블록
@@ -47,7 +47,14 @@ public class AccessLogFilter extends OncePerRequestFilter {
 /** 예시 결과(GET /products/:id, 추천 60초)를 각 계층의 설정으로 옮긴 모습 */
 export function configSnippets(seconds: number) {
   return {
-    redis: `SET products:123 "<응답 JSON>" EX ${seconds}`,
+    redis: `# 응답을 넣을 때 TTL을 함께 정해요
+SET products:123 "<응답 JSON>" EX ${seconds}
+
+# 이미 있는 키에는 TTL만 걸어요
+EXPIRE products:123 ${seconds}
+
+# 남은 시간 확인
+TTL products:123`,
     spring: `@Bean
 RedisCacheManagerBuilderCustomizer productCacheTtl() {
     return builder -> builder.withCacheConfiguration("products",
@@ -81,6 +88,14 @@ export const FAQ = [
     q: '쓰기 API는 어떻게 다루나요?',
     a: '캐시 대상은 GET 2xx 응답이에요. 쓰기 요청은 같은 리소스(쿼리를 뺀 경로)의 캐시를 비우는 데 써요. 예를 들어 PUT /products/123은 GET /products/123?lang=ko 캐시를 비워요. 쓰기 비중이 높은 엔드포인트는 "캐시 비추천"으로 판정해요.',
   },
+] as const
+
+/** 첫 화면 오른쪽의 결과 예시. 판정 세 종류가 모두 보이게 골랐다 */
+export const HERO_RESULTS = [
+  { endpoint: 'GET /products/:id', verdict: 'cache', ttl: '1분', hit: '74%', stale: '0.3%' },
+  { endpoint: 'GET /categories', verdict: 'cache', ttl: '10분', hit: '96%', stale: '0%' },
+  { endpoint: 'GET /users/:id/cart', verdict: 'dont', ttl: null, hit: '6%', stale: '-' },
+  { endpoint: 'GET /search', verdict: 'insufficient', ttl: null, hit: '-', stale: '-' },
 ] as const
 
 export const GITHUB_ORG = 'https://github.com/TTL-ADVISOR'

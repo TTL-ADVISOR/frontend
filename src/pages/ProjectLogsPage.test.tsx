@@ -60,12 +60,13 @@ describe('로그 업로드', () => {
   it('올린 로그가 없으면 빈 상태와 업로드 영역을 보여 준다', async () => {
     withProject()
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
 
     expect(await screen.findByText('아직 올린 로그가 없습니다')).toBeInTheDocument()
     const crumbs = screen.getByRole('navigation', { name: '현재 위치' })
     expect(within(crumbs).getByRole('link', { name: '프로젝트' })).toHaveAttribute('href', '/projects')
-    expect(within(crumbs).getByText('상품 API')).toHaveAttribute('aria-current', 'page')
+    expect(within(crumbs).getByRole('link', { name: '상품 API' })).toHaveAttribute('href', '/projects/1')
+    expect(within(crumbs).getByText('로그')).toHaveAttribute('aria-current', 'page')
     // 이미 끝난 업로드를 열었을 때는 알리지 않는다
     expect(within(screen.getByRole('region', { name: '알림' })).queryByText(/처리를/)).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: '파일 선택' })).toHaveAccessibleDescription(/최대 100MB/)
@@ -98,7 +99,7 @@ describe('로그 업로드', () => {
       }),
     )
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
     await screen.findByText('아직 올린 로그가 없습니다')
     await pickAndUpload()
 
@@ -128,7 +129,7 @@ describe('로그 업로드', () => {
       http.get('/api/uploads/31', () => HttpResponse.json(upload({ id: 31, filename: 'drop.log' }))),
     )
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
     const zone = (await screen.findByText('로그 파일을 여기에 끌어다 놓으세요')).parentElement!
     fireEvent.drop(zone, { dataTransfer: { files: [logFile('drop.log')] } })
     await userEvent.click(await screen.findByRole('button', { name: '올리기' }))
@@ -147,7 +148,7 @@ describe('로그 업로드', () => {
       }),
     )
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
     await screen.findByText('아직 올린 로그가 없습니다')
     await userEvent.upload(fileInput(), logFile('access.csv'), { applyAccept: false })
 
@@ -167,7 +168,7 @@ describe('로그 업로드', () => {
     const big = logFile()
     Object.defineProperty(big, 'size', { value: 100 * 1024 * 1024 + 1 })
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
     await screen.findByText('아직 올린 로그가 없습니다')
     await userEvent.upload(fileInput(), big)
 
@@ -186,7 +187,7 @@ describe('로그 업로드', () => {
       ),
     )
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
     await screen.findByText('아직 올린 로그가 없습니다')
     await pickAndUpload()
 
@@ -211,7 +212,7 @@ describe('로그 업로드', () => {
       http.get('/api/uploads/32', () => HttpResponse.json(upload({ id: 32 }))),
     )
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
     await screen.findByText('아직 올린 로그가 없습니다')
     const before = meCalls
     await pickAndUpload()
@@ -238,7 +239,7 @@ describe('로그 업로드', () => {
       }),
     ])
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
 
     const card = await screen.findByRole('article', { name: 'access.jsonl 처리 상태' })
     expect(within(card).getByRole('alert')).toHaveTextContent('JSON Lines 형식이 아닙니다')
@@ -251,7 +252,7 @@ describe('로그 업로드', () => {
   it('이력에서 다른 업로드를 누르면 그 업로드의 상태를 보여 준다', async () => {
     withProject([upload({ id: 2, filename: 'new.jsonl' }), upload({ id: 1, filename: 'old.jsonl', totalLines: 77 })])
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
 
     // 처음에는 가장 최근 업로드
     expect(await screen.findByRole('article', { name: 'new.jsonl 처리 상태' })).toBeInTheDocument()
@@ -278,14 +279,14 @@ describe('로그 업로드 (화면 상태)', () => {
     )
 
     // 프로젝트 2를 먼저 열어 캐시에 남긴다 (다시 올 때 로딩 화면 없이 바로 그려지는 경우)
-    const { router } = renderRoute('/projects/2')
+    const { router } = renderRoute('/projects/2/logs')
     await screen.findByRole('article', { name: 'orders.jsonl 처리 상태' })
-    await router.navigate('/projects/1')
+    await router.navigate('/projects/1/logs')
     await screen.findByRole('article', { name: 'new.jsonl 처리 상태' })
     await userEvent.click(within(screen.getByRole('list', { name: '업로드 이력' })).getByRole('button', { name: /old/ }))
     await screen.findByRole('article', { name: 'old.jsonl 처리 상태' })
 
-    await router.navigate('/projects/2')
+    await router.navigate('/projects/2/logs')
 
     expect(await screen.findByRole('article', { name: 'orders.jsonl 처리 상태' })).toBeInTheDocument()
     expect(screen.queryByRole('article', { name: 'old.jsonl 처리 상태' })).not.toBeInTheDocument()
@@ -303,7 +304,7 @@ describe('로그 업로드 (화면 상태)', () => {
       }),
     )
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
     const card = await screen.findByRole('article', { name: 'access.jsonl 처리 상태' })
     expect(within(card).getByText('700줄 처리함')).toBeInTheDocument()
     await waitFor(() => expect(calls).toBeGreaterThan(1), { timeout: 3000 })
@@ -325,7 +326,7 @@ describe('올리기 전 미리보기', () => {
       }),
     )
 
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
     await screen.findByText('아직 올린 로그가 없습니다')
     await userEvent.upload(fileInput(), logFile('access.jsonl', good + good.replace('"status":200', '"status":"200"')))
 
@@ -343,7 +344,7 @@ describe('올리기 전 미리보기', () => {
 
   it('처음 줄들이 모두 형식에 맞지 않으면 경고한다', async () => {
     withProject()
-    renderRoute('/projects/1')
+    renderRoute('/projects/1/logs')
     await screen.findByText('아직 올린 로그가 없습니다')
     await userEvent.upload(fileInput(), logFile('access.log', 'GET /products/1 200\nGET /products/2 200\n'))
 

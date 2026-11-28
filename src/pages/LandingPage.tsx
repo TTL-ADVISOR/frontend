@@ -5,7 +5,15 @@ import CodeBlock from '../components/CodeBlock'
 import Tabs from '../components/Tabs'
 import { useMe } from '../features/auth/queries'
 import TtlCurve from '../features/landing/TtlCurve'
-import { configSnippets, FAQ, GITHUB_ORG, LOG_FIELDS, NGINX_LOG, SPRING_LOG } from '../features/landing/content'
+import {
+  configSnippets,
+  FAQ,
+  GITHUB_ORG,
+  HERO_RESULTS,
+  LOG_FIELDS,
+  NGINX_LOG,
+  SPRING_LOG,
+} from '../features/landing/content'
 import { RECOMMENDED, RECOMMENDED_SECONDS, SAMPLE } from '../features/landing/sample'
 
 /**
@@ -62,6 +70,39 @@ export default function LandingPage() {
             </a>
           </div>
           <p className="landing__note">JSON Lines 로그 · 파일 하나에 100MB까지</p>
+          <figure className="hero-results">
+            <table className="hero-results__table">
+              <caption className="hero-results__caption">결과 예시 · 엔드포인트마다 판정과 추천 TTL</caption>
+              <thead>
+                <tr>
+                  <th scope="col">엔드포인트</th>
+                  <th scope="col">추천 TTL</th>
+                  <th scope="col">히트율</th>
+                  <th scope="col">오래된 응답</th>
+                </tr>
+              </thead>
+              <tbody>
+                {HERO_RESULTS.map((row) => (
+                  <tr key={row.endpoint}>
+                    <th scope="row">
+                      <code>{row.endpoint}</code>
+                    </th>
+                    <td>
+                      {row.ttl ? (
+                        <strong className="hero-results__ttl">{row.ttl}</strong>
+                      ) : (
+                        <span className="hero-results__verdict">
+                          {row.verdict === 'dont' ? '캐시 비추천' : '데이터 부족'}
+                        </span>
+                      )}
+                    </td>
+                    <td>{row.hit}</td>
+                    <td>{row.stale}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </figure>
         </section>
 
         <section className="proof" aria-label="분석 결과 예시">
@@ -247,12 +288,12 @@ export default function LandingPage() {
             <Tabs
               label="추천 TTL을 옮길 곳"
               items={[
-                { id: 'redis', label: 'Redis', content: <CodeBlock label="Redis 명령" code={snippets.redis} /> },
                 {
                   id: 'spring',
                   label: 'Spring Cache',
                   content: <CodeBlock label="Spring 캐시 설정" code={snippets.spring} />,
                 },
+                { id: 'redis', label: 'Redis', content: <CodeBlock label="Redis 명령" code={snippets.redis} /> },
                 { id: 'http', label: 'HTTP 헤더', content: <CodeBlock label="HTTP 응답 헤더" code={snippets.http} /> },
               ]}
             />
