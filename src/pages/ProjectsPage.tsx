@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router'
-import { ErrorMessage, Loading } from '../components/QueryState'
+import { ErrorMessage } from '../components/QueryState'
+import { SkeletonRows } from '../components/Skeleton'
 import CreateProjectForm from '../features/projects/CreateProjectForm'
 import ProjectList from '../features/projects/ProjectList'
 import { useProjects } from '../features/projects/queries'
@@ -19,7 +20,7 @@ export default function ProjectsPage() {
       <CreateProjectForm onCreated={(project) => navigate(`/projects/${project.id}`)} />
 
       {projects.isPending ? (
-        <Loading label="프로젝트를 불러오는 중…" />
+        <SkeletonRows label="프로젝트를 불러오는 중…" />
       ) : projects.isError ? (
         <ErrorMessage error={projects.error} onRetry={() => projects.refetch()} />
       ) : (

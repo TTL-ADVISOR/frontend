@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FocusEvent } from 'react'
 import { Link, NavLink, Outlet, useLocation, useMatch } from 'react-router'
 import { useLogout, useMe } from '../features/auth/queries'
 import { useProject } from '../features/projects/queries'
+import ToastProvider from '../features/toast/ToastProvider'
 import BrandMark from './BrandMark'
 import Icon, { type IconName } from './Icon'
 
@@ -69,63 +70,65 @@ export default function Layout() {
     .join(' ')
 
   return (
-    <div className={shellClass}>
-      {/* 좁은 화면에서만 보이는 윗줄 */}
-      <div className="shell__topbar">
-        <button
-          type="button"
-          className="icon-button"
-          aria-label="메뉴 열기"
-          aria-expanded={drawerOpen}
-          aria-controls="sidebar"
-          onClick={() => setDrawerOpen(true)}
-        >
-          <Icon name="menu" />
-        </button>
-        <Brand />
-      </div>
-
-      <aside
-        id="sidebar"
-        className="sidebar"
-        aria-label="사이드바"
-        onMouseEnter={startPeek}
-        onMouseLeave={endPeek}
-        onFocus={() => !pinned && setPeek(true)}
-        onBlur={handleBlur}
-      >
-        <div className="sidebar__head">
+    <ToastProvider>
+      <div className={shellClass}>
+        {/* 좁은 화면에서만 보이는 윗줄 */}
+        <div className="shell__topbar">
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="메뉴 열기"
+            aria-expanded={drawerOpen}
+            aria-controls="sidebar"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <Icon name="menu" />
+          </button>
           <Brand />
-          <button
-            type="button"
-            className="icon-button sidebar__pin"
-            aria-label="사이드바 고정"
-            aria-pressed={pinned}
-            title={pinned ? '사이드바 고정 해제' : '사이드바 고정'}
-            onClick={togglePinned}
-          >
-            <Icon name="panel" />
-          </button>
-          <button
-            type="button"
-            className="icon-button sidebar__close"
-            aria-label="메뉴 닫기"
-            onClick={() => setDrawerOpen(false)}
-          >
-            <Icon name="close" />
-          </button>
         </div>
-        <Navigation />
-        <div className="sidebar__foot">
-          <Account />
-        </div>
-      </aside>
-      <div className="shell__scrim" aria-hidden="true" onClick={() => setDrawerOpen(false)} />
 
-      <main className="shell__main">
-        <Outlet />
-      </main>
-    </div>
+        <aside
+          id="sidebar"
+          className="sidebar"
+          aria-label="사이드바"
+          onMouseEnter={startPeek}
+          onMouseLeave={endPeek}
+          onFocus={() => !pinned && setPeek(true)}
+          onBlur={handleBlur}
+        >
+          <div className="sidebar__head">
+            <Brand />
+            <button
+              type="button"
+              className="icon-button sidebar__pin"
+              aria-label="사이드바 고정"
+              aria-pressed={pinned}
+              title={pinned ? '사이드바 고정 해제' : '사이드바 고정'}
+              onClick={togglePinned}
+            >
+              <Icon name="panel" />
+            </button>
+            <button
+              type="button"
+              className="icon-button sidebar__close"
+              aria-label="메뉴 닫기"
+              onClick={() => setDrawerOpen(false)}
+            >
+              <Icon name="close" />
+            </button>
+          </div>
+          <Navigation />
+          <div className="sidebar__foot">
+            <Account />
+          </div>
+        </aside>
+        <div className="shell__scrim" aria-hidden="true" onClick={() => setDrawerOpen(false)} />
+
+        <main className="shell__main">
+          <Outlet />
+        </main>
+      </div>
+    </ToastProvider>
   )
 }
 

@@ -50,6 +50,12 @@ function withProject(uploads: UploadDetail[] = []) {
 
 const fileInput = () => screen.getByTestId('upload-input') as HTMLInputElement
 
+/** 파일을 고르고, 미리보기에서 올리기를 누른다 */
+async function pickAndUpload(file = logFile()) {
+  await userEvent.upload(fileInput(), file)
+  await userEvent.click(await screen.findByRole('button', { name: '올리기' }))
+}
+
 describe('로그 업로드', () => {
   it('올린 로그가 없으면 빈 상태와 업로드 영역을 보여 준다', async () => {
     withProject()
@@ -57,6 +63,11 @@ describe('로그 업로드', () => {
     renderRoute('/projects/1')
 
     expect(await screen.findByText('아직 올린 로그가 없습니다')).toBeInTheDocument()
+    const crumbs = screen.getByRole('navigation', { name: '현재 위치' })
+    expect(within(crumbs).getByRole('link', { name: '프로젝트' })).toHaveAttribute('href', '/projects')
+    expect(within(crumbs).getByText('상품 API')).toHaveAttribute('aria-current', 'page')
+    // 이미 끝난 업로드를 열었을 때는 알리지 않는다
+    expect(within(screen.getByRole('region', { name: '알림' })).queryByText(/처리를/)).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: '파일 선택' })).toHaveAccessibleDescription(/최대 100MB/)
   })
 
@@ -89,7 +100,7 @@ describe('로그 업로드', () => {
 
     renderRoute('/projects/1')
     await screen.findByText('아직 올린 로그가 없습니다')
-    await userEvent.upload(fileInput(), logFile())
+    await pickAndUpload()
 
     const card = await screen.findByRole('article', { name: 'access.jsonl 처리 상태' })
     expect(await within(card).findByText('500줄 처리함')).toBeInTheDocument()
@@ -97,6 +108,8 @@ describe('로그 업로드', () => {
     expect(within(card).getByText('완료')).toBeInTheDocument()
     expect(within(card).getByText('2줄')).toBeInTheDocument()
     expect(sentName).toBe('access.jsonl')
+    // 처리 중이던 업로드가 끝나면 알림을 띄운다
+    expect(within(screen.getByRole('region', { name: '알림' })).getByText('access.jsonl 처리를 마쳤어요.')).toBeInTheDocument()
     expect(sentToken).toBe('token-1')
 
     const history = await screen.findByRole('list', { name: '업로드 이력' })
@@ -118,6 +131,7 @@ describe('로그 업로드', () => {
     renderRoute('/projects/1')
     const zone = (await screen.findByText('로그 파일을 여기에 끌어다 놓으세요')).parentElement!
     fireEvent.drop(zone, { dataTransfer: { files: [logFile('drop.log')] } })
+    await userEvent.click(await screen.findByRole('button', { name: '올리기' }))
 
     expect(await screen.findByRole('article', { name: 'drop.log 처리 상태' })).toBeInTheDocument()
     expect(posted).toBe(true)
@@ -174,7 +188,7 @@ describe('로그 업로드', () => {
 
     renderRoute('/projects/1')
     await screen.findByText('아직 올린 로그가 없습니다')
-    await userEvent.upload(fileInput(), logFile())
+    await pickAndUpload()
 
     expect(await screen.findByRole('alert')).toHaveTextContent('잠시 후 다시 시도해 주세요')
   })
@@ -200,7 +214,7 @@ describe('로그 업로드', () => {
     renderRoute('/projects/1')
     await screen.findByText('아직 올린 로그가 없습니다')
     const before = meCalls
-    await userEvent.upload(fileInput(), logFile())
+    await pickAndUpload()
 
     expect(await screen.findByRole('article', { name: 'access.jsonl 처리 상태' })).toBeInTheDocument()
     expect(posts).toBe(2)
@@ -295,5 +309,45 @@ describe('로그 업로드 (화면 상태)', () => {
     await waitFor(() => expect(calls).toBeGreaterThan(1), { timeout: 3000 })
 
     expect(screen.getByRole('article', { name: 'access.jsonl 처리 상태' })).toHaveTextContent('700줄 처리함')
+  })
+})
+
+describe('올리기 전 미리보기', () => {
+  const good = '{"ts":"2026-11-22T10:00:00.123Z","method":"GET","path":"/products/1","status":200,"latencyMs":12}\n'
+
+  it('필드 확인과 앞부분을 보여 주고, 빠진 선택 필드를 안내하며, 취소하면 보내지 않는다', async () => {
+    let posted = false
+    withProject()
+    server.use(
+      http.post('/api/projects/1/uploads', () => {
+        posted = true
+        return HttpResponse.json({ id: 40, status: 'UPLOADED' }, { status: 202 })
+      }),
+    )
+
+    renderRoute('/projects/1')
+    await screen.findByText('아직 올린 로그가 없습니다')
+    await userEvent.upload(fileInput(), logFile('access.jsonl', good + good.replace('"status":200', '"status":"200"')))
+
+    const checks = await screen.findByRole('list', { name: '필드 확인' })
+    expect(within(checks).getByText('ts').closest('li')).toHaveTextContent('있음')
+    expect(within(checks).getByText('status').closest('li')).toHaveTextContent('2번째 줄: 100~599 정수가 아님')
+    expect(within(checks).getByText('respHash').closest('li')).toHaveTextContent('없음 (선택)')
+    expect(screen.getByRole('list', { name: '정확도 안내' })).toHaveTextContent('respHash가 없어요')
+    expect(within(screen.getByRole('list', { name: '파일 앞부분' })).getAllByRole('listitem')).toHaveLength(2)
+
+    await userEvent.click(screen.getByRole('button', { name: '취소' }))
+    expect(screen.getByRole('button', { name: '파일 선택' })).toBeInTheDocument()
+    expect(posted).toBe(false)
+  })
+
+  it('처음 줄들이 모두 형식에 맞지 않으면 경고한다', async () => {
+    withProject()
+    renderRoute('/projects/1')
+    await screen.findByText('아직 올린 로그가 없습니다')
+    await userEvent.upload(fileInput(), logFile('access.log', 'GET /products/1 200\nGET /products/2 200\n'))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('모두 형식에 맞지 않아요')
+    expect(screen.getByRole('button', { name: '올리기' })).toBeEnabled()
   })
 })

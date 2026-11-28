@@ -25,8 +25,13 @@ export default function ProjectDetailPage() {
 
   return (
     <section className="stack">
-      <nav>
-        <Link to="/projects">← 프로젝트 목록</Link>
+      <nav aria-label="현재 위치" className="breadcrumb">
+        <ol>
+          <li>
+            <Link to="/projects">프로젝트</Link>
+          </li>
+          <li aria-current="page">{project.data.name}</li>
+        </ol>
       </nav>
       <header>
         <h1>{project.data.name}</h1>

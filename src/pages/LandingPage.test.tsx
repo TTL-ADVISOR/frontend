@@ -33,6 +33,39 @@ describe('소개 화면', () => {
     expect(steps.map((h) => h.textContent)).toEqual(['로그 올리기', '엔드포인트로 묶기', 'TTL마다 재생하기', '추천 받기'])
   })
 
+  it('로그 형식, 설정 예시, 자주 묻는 질문을 보여 주고 탭으로 바꿔 본다', async () => {
+    server.use(loggedOut)
+    renderRoute('/')
+
+    const format = await screen.findByRole('region', { name: '로그 형식' })
+    expect(within(format).getAllByRole('row').map((row) => row.querySelector('th')?.textContent).slice(1)).toEqual([
+      'ts',
+      'method',
+      'path',
+      'status',
+      'latencyMs',
+      'size',
+      'respHash',
+    ])
+
+    const config = screen.getByRole('region', { name: '추천을 설정으로' })
+    expect(within(config).getByRole('tab', { name: 'Redis' })).toHaveAttribute('aria-selected', 'true')
+    expect(within(config).getByRole('tabpanel')).toHaveTextContent('EX 60')
+    await userEvent.click(within(config).getByRole('tab', { name: 'HTTP 헤더' }))
+    expect(within(config).getByRole('tabpanel')).toHaveTextContent('Cache-Control: public, max-age=60')
+    // 화살표로도 옮긴다
+    await userEvent.keyboard('{ArrowLeft}')
+    expect(within(config).getByRole('tab', { name: 'Spring Cache' })).toHaveFocus()
+    expect(within(config).getByRole('tabpanel')).toHaveTextContent('entryTtl(Duration.ofSeconds(60))')
+
+    const faq = screen.getByRole('region', { name: '자주 묻는 질문' })
+    expect(within(faq).getByText('respHash가 없으면 어떻게 되나요?')).toBeInTheDocument()
+    expect(within(screen.getByRole('navigation', { name: '바닥글' })).getByRole('link', { name: 'GitHub' })).toHaveAttribute(
+      'href',
+      'https://github.com/TTL-ADVISOR',
+    )
+  })
+
   it('로그인했으면 내 프로젝트로 가는 버튼을 보여 준다', async () => {
     server.use(http.get('/api/projects', () => HttpResponse.json([])))
     const { router } = renderRoute('/')
