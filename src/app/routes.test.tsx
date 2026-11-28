@@ -9,11 +9,11 @@ describe('routes', () => {
     server.use(http.get('/api/projects', () => HttpResponse.json([])))
   })
 
-  it('루트는 프로젝트 목록으로 이동한다', async () => {
+  it('루트는 서비스 소개 화면이다', async () => {
     const { router } = renderRoute('/')
 
-    expect(await screen.findByRole('heading', { name: '프로젝트' })).toBeInTheDocument()
-    expect(router.state.location.pathname).toBe('/projects')
+    expect(await screen.findByRole('heading', { level: 1, name: /로그로 정하세요/ })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/')
   })
 
   it('공통 레이아웃에 홈 링크가 있다', async () => {
