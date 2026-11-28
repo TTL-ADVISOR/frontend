@@ -7,9 +7,9 @@ export default function AuthLayout() {
   return (
     <div className="auth-shell">
       <header className="auth-shell__header">
-        <Link to="/projects" className="layout__brand">
-          <BrandMark className="layout__brand-mark" />
-          <span className="layout__brand-name">TTL Advisor</span>
+        <Link to="/projects" className="brand">
+          <BrandMark className="brand__mark" />
+          <span className="brand__name">TTL Advisor</span>
         </Link>
       </header>
       <main className="auth-shell__main">

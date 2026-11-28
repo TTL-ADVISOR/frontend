@@ -34,39 +34,6 @@ a {
   color: var(--color-accent);
 }
 
-.layout__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 24px;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.layout__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 800;
-  font-style: italic;
-  letter-spacing: -0.01em;
-  color: var(--color-text);
-  text-decoration: none;
-}
-
-.layout__brand-mark {
-  height: 22px;
-  width: auto;
-  color: var(--color-brand);
-}
-
-.layout__main {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 24px 16px;
-}
-
 h1 {
   margin: 0 0 4px;
   font-size: 1.5rem;
@@ -297,37 +264,6 @@ h1 {
 
 .project-item__meta dd {
   margin: 0;
-}
-
-/* ---- 계정 (헤더) ---- */
-
-.account {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.account__name {
-  overflow: hidden;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.account__error {
-  font-size: 0.8125rem;
-  color: var(--color-danger);
-}
-
-.account__logout {
-  padding: 6px 12px;
-  font-size: 0.875rem;
-}
-
-.account__logout:hover:not(:disabled) {
-  border-color: #c4c8cf;
-  background: #f4f4f5;
 }
 
 /* ---- 로그인·회원가입 화면 ---- */
@@ -861,5 +797,370 @@ h1 {
     width: 100%;
     opacity: 0.35;
     animation: none;
+  }
+}
+
+/* ---- 앱 뼈대: 사이드바 + 본문 ---- */
+
+.shell {
+  --sidebar-width: 248px;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.shell--collapsed {
+  --sidebar-width: 68px;
+}
+
+.shell__main {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+}
+
+.shell__topbar,
+.shell__scrim,
+.icon-button.sidebar__close {
+  display: none;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand__mark {
+  flex: none;
+  height: 22px;
+  width: auto;
+  color: var(--color-brand);
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden auto;
+  background: #fafafa;
+  border-right: 1px solid var(--color-border);
+}
+
+.sidebar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 20px;
+}
+
+.sidebar__nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+}
+
+.sidebar__group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.sidebar__group-title {
+  margin: 0 0 6px;
+  padding: 0 10px;
+  overflow: hidden;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: #3a3a3e;
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sidebar__item .icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+.sidebar__item:hover:not(:disabled, .sidebar__item--soon) {
+  background: #efeff1;
+  color: var(--color-text);
+}
+
+.sidebar__item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* 지금 보고 있는 메뉴: 빨간 막대 + 진한 글씨 */
+.sidebar__item.active {
+  font-weight: 700;
+  color: var(--color-text);
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), inset 0 0 0 1px var(--color-border);
+}
+
+.sidebar__item.active::before {
+  content: '';
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  left: -12px;
+  width: 3px;
+  background: var(--color-brand);
+  border-radius: 0 3px 3px 0;
+}
+
+.sidebar__item--soon {
+  color: #a1a1aa;
+  cursor: default;
+}
+
+.sidebar__item:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.sidebar__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar__soon {
+  margin-left: auto;
+  padding: 1px 6px;
+  font-size: 0.6875rem;
+  color: #71717a;
+  background: #efeff1;
+  border-radius: 4px;
+}
+
+.sidebar__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.account {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.account__who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 6px 4px 8px;
+}
+
+.account__avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+
+.account__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.account__name,
+.account__email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account__name {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.account__email {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.account__error {
+  margin: 0;
+  padding: 0 10px;
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.icon-button .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.icon-button:hover {
+  background: #efeff1;
+}
+
+.icon-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+}
+
+/* 접힌 사이드바: 아이콘만 */
+@media (min-width: 901px) {
+  .shell--collapsed .sidebar__head {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .shell--collapsed .brand__name,
+  .shell--collapsed .sidebar__label,
+  .shell--collapsed .sidebar__soon,
+  .shell--collapsed .sidebar__group-title,
+  .shell--collapsed .account__text {
+    display: none;
+  }
+
+  .shell--collapsed .sidebar__item {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .shell--collapsed .account__who {
+    justify-content: center;
+  }
+
+  .shell--collapsed .account__error {
+    padding: 0;
+    text-align: center;
+  }
+}
+
+/* 좁은 화면: 윗줄 + 왼쪽에서 나오는 서랍 */
+@media (max-width: 900px) {
+  .shell,
+  .shell--collapsed {
+    display: block;
+    --sidebar-width: 280px;
+  }
+
+  .shell__topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 56px;
+    padding: 0 12px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .shell__main {
+    padding: 20px 16px 40px;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 30;
+    width: var(--sidebar-width);
+    box-shadow: 0 0 24px rgb(0 0 0 / 0.12);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.2s ease,
+      visibility 0.2s;
+  }
+
+  .shell--drawer-open .sidebar {
+    transform: none;
+    visibility: visible;
+  }
+
+  .sidebar__head {
+    padding: 0 12px 0 20px;
+  }
+
+  .icon-button.sidebar__close {
+    display: grid;
+  }
+
+  .sidebar__collapse {
+    display: none;
+  }
+
+  .shell--drawer-open .shell__scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: block;
+    background: rgb(0 0 0 / 0.32);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    transition: none;
   }
 }
